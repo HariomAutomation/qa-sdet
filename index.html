@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QA SDET Master Dashboard & AI Learning Mentor</title>
-  <meta name="description" content="Production-ready QA SDET Master Curriculum, Live Coding Playground, Automation Frameworks, and Gemini AI Learning Mentor.">
+  <title>QA SDET Master Dashboard & Gemini Pro AI Learning Hub</title>
+  <meta name="description" content="Production-ready QA SDET Master Curriculum, Live Coding Playground, Automation Frameworks, Google Sign-In, and Gemini Pro AI Learning Mentor.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,8 +12,75 @@
   <link rel="stylesheet" href="index.css">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+
+  <!-- ============================================================ -->
+  <!-- 🔐 GOOGLE SIGN-IN & GEMINI PRO ONBOARDING GATEWAY -->
+  <!-- ============================================================ -->
+  <div id="auth-gate" class="auth-gate-overlay">
+    <div class="auth-card">
+      <div class="auth-badge">⚡ SDET Master Hub</div>
+      <h2 class="auth-title">Welcome to QA SDET Master Course</h2>
+      <p class="auth-sub">Sign in with Google to activate your personalized learning roadmap, live progress tracking, and Gemini Pro AI mentorship.</p>
+
+      <!-- Sign-In Form -->
+      <div class="auth-form-step" id="step-signin">
+        <!-- Google Sign-In Official Styled Button -->
+        <button class="btn-google" onclick="handleGoogleSignIn()">
+          <svg class="google-icon" viewBox="0 0 48 48">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          </svg>
+          <span>Sign in with Google</span>
+        </button>
+
+        <div class="auth-divider">
+          <span>OR QUICK CONNECT</span>
+        </div>
+
+        <div class="quick-profile-box" onclick="handleQuickConnect('Hariom Prajapati', 'hariom@automation.com')">
+          <div class="quick-avatar">HP</div>
+          <div style="flex: 1; text-align: left;">
+            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">Hariom Prajapati</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">hariom@automation.com (SDET Candidate)</div>
+          </div>
+          <span style="color: var(--accent-cyan); font-size: 0.85rem; font-weight: 600;">Connect ➔</span>
+        </div>
+      </div>
+
+      <!-- Gemini Pro API Key Step -->
+      <div class="auth-form-step" id="step-gemini-pro" style="display: none; text-align: left;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <span class="pill" style="background: rgba(168, 85, 247, 0.2); color: var(--accent-purple);">Step 2 of 2</span>
+          <span style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 600;">Gemini Pro AI Activation</span>
+        </div>
+        <h3 style="font-size: 1.15rem; color: #fff; margin-bottom: 0.4rem;">Activate Gemini Pro SDET Mentor</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Enter your Gemini API Key for unlimited code reviews, AI progress tracking, and 24/7 doubt resolution.
+        </p>
+
+        <label style="font-size: 0.8rem; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 0.3rem;">Google Gemini API Key</label>
+        <input type="password" id="gate-gemini-key" placeholder="AIzaSy..." class="auth-input">
+
+        <div style="display: flex; gap: 0.5rem; margin-top: 1.25rem;">
+          <button class="btn-outline" style="flex: 1;" onclick="completeOnboarding(false)">Skip for now (Free Tier)</button>
+          <button class="btn-primary" style="flex: 1;" onclick="completeOnboarding(true)">Activate Pro & Start 🚀</button>
+        </div>
+      </div>
+
+      <!-- Feature List -->
+      <div class="auth-features">
+        <div class="auth-feat-item">✔ 5 Master Phases & 9 Frameworks</div>
+        <div class="auth-feat-item">✔ Real-time Code Review with Big-O</div>
+        <div class="auth-feat-item">✔ Gemini Pro Intelligent Doubt Solving</div>
+      </div>
+    </div>
+  </div>
 
   <!-- Header -->
   <header>
@@ -30,13 +97,23 @@
       <button class="nav-btn" data-tab="tab-cheatsheets">Cheatsheets & Interview</button>
       <button class="ai-nav-btn" onclick="toggleAiDrawer()">✨ AI Mentor</button>
     </nav>
+    
+    <!-- User Profile Header -->
+    <div class="user-header-box" id="user-header-box">
+      <div class="user-header-avatar" id="header-avatar">HP</div>
+      <div class="user-header-info">
+        <span class="user-header-name" id="header-name">Hariom Prajapati</span>
+        <span class="user-header-tier" id="header-tier">✨ Gemini Pro Active</span>
+      </div>
+      <button class="user-signout-btn" onclick="handleSignOut()" title="Sign Out">🚪</button>
+    </div>
   </header>
 
   <main>
     <!-- Progress Tracker -->
     <div class="progress-card">
       <div class="progress-info">
-        <span class="progress-title">🎯 Course Progress Tracker</span>
+        <span class="progress-title">🎯 <span id="progress-user-title">Hariom's</span> SDET Journey Tracker</span>
         <span class="progress-sub" id="progress-text">0 of 22 lessons completed</span>
       </div>
       <div class="progress-bar-wrap">
@@ -49,7 +126,7 @@
     <section class="hero-banner">
       <div class="hero-content">
         <h2>Enterprise QA SDET Master Hub</h2>
-        <p>Complete 5-Phase curriculum covering Foundation, Playwright E2E, API Testing, Performance (k6), Docker/K8s, a11y & Security, and Senior Interview Framework Design with Gemini AI Mentor support.</p>
+        <p>Complete 5-Phase curriculum covering Foundation, Playwright E2E, API Testing, Performance (k6), Docker/K8s, a11y & Security, and Senior Interview Framework Design with Gemini Pro AI support.</p>
       </div>
       <div class="hero-stats">
         <div class="stat-box">
@@ -65,8 +142,8 @@
           <div class="stat-label">Cheatsheets</div>
         </div>
         <div class="stat-box" style="border-color: rgba(99, 102, 241, 0.4); background: rgba(99, 102, 241, 0.1);">
-          <div class="stat-num" style="color: var(--accent-purple);">AI</div>
-          <div class="stat-label" style="color: var(--accent-cyan);">Gemini 3 Mentor</div>
+          <div class="stat-num" id="hero-tier-badge" style="color: var(--accent-purple); font-size: 1.5rem;">PRO</div>
+          <div class="stat-label" style="color: var(--accent-cyan);">Gemini AI Active</div>
         </div>
       </div>
     </section>
@@ -240,7 +317,7 @@
     <!-- Chat Messages -->
     <div class="ai-chat-messages" id="ai-chat-messages">
       <div class="ai-message ai-bot">
-        <div class="ai-msg-content">
+        <div class="ai-msg-content" id="ai-welcome-msg">
           नमस्ते! 🙏 Main aapka <strong>Gemini SDET AI Mentor</strong> hoon.<br><br>
           Aap course mein kahin bhi phas jayein, kisi concept (Closures, Playwright, API, Docker) ko samajhna ho, ya apne code ka <strong>Best Practice & Big-O Review</strong> karwana ho, toh mujhse yahan pooch sakte hain!
         </div>

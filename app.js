@@ -1,6 +1,11 @@
 // ============================================================
-// 🚀 Enterprise QA SDET Master Hub & Gemini AI Mentor
+// 🚀 Enterprise QA SDET Master Hub & Gemini Pro AI Mentor
 // ============================================================
+
+const USER_PROFILE_KEY = "sdet_user_profile_v1";
+const AI_API_KEY_STORAGE = "gemini_sdet_api_key_v1";
+const AI_MODEL_STORAGE = "gemini_sdet_model_v1";
+const STORAGE_KEY = "sdet_course_progress_v1";
 
 // Static Embedded Curriculum Data (Ensures 100% standalone GitHub Pages functionality)
 const CURRICULUM_DATA = [
@@ -258,10 +263,133 @@ const PROJECTS_DATA = [
   },
 ];
 
-// Current State Tracking
+// User Profile State
+let currentUser = null;
 let currentActiveDocument = "Exploring SDET Curriculum";
-const STORAGE_KEY = "sdet_course_progress_v1";
 
+function getUserProfile() {
+  try {
+    return JSON.parse(localStorage.getItem(USER_PROFILE_KEY) || "null");
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveUserProfile(user) {
+  localStorage.setItem(USER_PROFILE_KEY, JSON.stringify(user));
+  currentUser = user;
+  updateUserInterface();
+}
+
+function getApiKey() {
+  return localStorage.getItem(AI_API_KEY_STORAGE) || "";
+}
+
+function getAiModel() {
+  return localStorage.getItem(AI_MODEL_STORAGE) || "gemini-2.5-flash";
+}
+
+// Check Authentication on Boot
+function checkAuthStatus() {
+  currentUser = getUserProfile();
+  const authGate = document.getElementById("auth-gate");
+
+  if (!currentUser) {
+    if (authGate) authGate.classList.remove("hidden");
+  } else {
+    if (authGate) authGate.classList.add("hidden");
+    updateUserInterface();
+  }
+}
+
+window.handleGoogleSignIn = function () {
+  // Simulated Google Sign-In with standard user account
+  const defaultUser = {
+    name: "Hariom Prajapati",
+    email: "hariom@automation.com",
+    avatar: "HP",
+    tier: getApiKey() ? "Gemini Pro" : "Standard",
+    loginTime: new Date().toISOString(),
+  };
+
+  document.getElementById("step-signin").style.display = "none";
+  document.getElementById("step-gemini-pro").style.display = "block";
+  currentUser = defaultUser;
+};
+
+window.handleQuickConnect = function (name, email) {
+  const initials = name.split(" ").map(n => n[0]).join("").toUpperCase();
+  currentUser = {
+    name: name,
+    email: email,
+    avatar: initials,
+    tier: getApiKey() ? "Gemini Pro" : "Standard",
+    loginTime: new Date().toISOString(),
+  };
+
+  document.getElementById("step-signin").style.display = "none";
+  document.getElementById("step-gemini-pro").style.display = "block";
+};
+
+window.completeOnboarding = function (isPro) {
+  const keyInput = document.getElementById("gate-gemini-key");
+  if (isPro && keyInput && keyInput.value.trim()) {
+    localStorage.setItem(AI_API_KEY_STORAGE, keyInput.value.trim());
+    currentUser.tier = "Gemini Pro";
+  } else if (!getApiKey()) {
+    currentUser.tier = "Free Learner";
+  } else {
+    currentUser.tier = "Gemini Pro";
+  }
+
+  saveUserProfile(currentUser);
+  document.getElementById("auth-gate").classList.add("hidden");
+
+  // Welcome AI message
+  const welcomeEl = document.getElementById("ai-welcome-msg");
+  if (welcomeEl) {
+    welcomeEl.innerHTML = `
+      नमस्ते <strong>${currentUser.name} ji!</strong> 🙏<br><br>
+      Aapka <strong>Gemini Pro SDET Mentor</strong> active hai. Main aapki poori SDET learning journey ko track karunga, code best practices suggest karunga, aur Playwright/TypeScript mein aane wale har doubt ko solve karunga.<br><br>
+      <em>Bataiye, aaj hum kya shuru karein?</em>
+    `;
+  }
+};
+
+window.handleSignOut = function () {
+  localStorage.removeItem(USER_PROFILE_KEY);
+  currentUser = null;
+  document.getElementById("step-signin").style.display = "block";
+  document.getElementById("step-gemini-pro").style.display = "none";
+  document.getElementById("auth-gate").classList.remove("hidden");
+};
+
+function updateUserInterface() {
+  if (!currentUser) return;
+
+  const headerAvatar = document.getElementById("header-avatar");
+  const headerName = document.getElementById("header-name");
+  const headerTier = document.getElementById("header-tier");
+  const progressUserTitle = document.getElementById("progress-user-title");
+  const heroTierBadge = document.getElementById("hero-tier-badge");
+
+  if (headerAvatar) headerAvatar.innerText = currentUser.avatar || "U";
+  if (headerName) headerName.innerText = currentUser.name || "Student";
+  if (progressUserTitle) progressUserTitle.innerText = `${currentUser.name.split(" ")[0]}'s`;
+
+  const isPro = Boolean(getApiKey()) || currentUser.tier.includes("Pro");
+  if (headerTier) {
+    headerTier.innerText = isPro ? "✨ Gemini Pro Active" : "🌱 Free Learner";
+    headerTier.style.color = isPro ? "var(--accent-purple)" : "var(--accent-cyan)";
+  }
+  if (heroTierBadge) {
+    heroTierBadge.innerText = isPro ? "PRO" : "FREE";
+  }
+
+  updateAiStatusBadge();
+}
+
+// Progress Tracking
 function getCompletedLessons() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
@@ -309,7 +437,8 @@ function updateProgressTracker() {
   // Update AI context
   const aiContextPill = document.getElementById("ai-context-pill");
   if (aiContextPill) {
-    aiContextPill.innerHTML = `📍 <strong>Context:</strong> ${currentActiveDocument} (${pct}% Complete)`;
+    const userName = currentUser ? currentUser.name.split(" ")[0] : "Learner";
+    aiContextPill.innerHTML = `📍 <strong>Context:</strong> ${currentActiveDocument} (${pct}% by ${userName})`;
   }
 }
 
@@ -628,17 +757,6 @@ window.executeProjectTest = async function (projectId) {
 // 🤖 GEMINI AI MENTOR INTEGRATION
 // ============================================================
 
-const AI_API_KEY_STORAGE = "gemini_sdet_api_key_v1";
-const AI_MODEL_STORAGE = "gemini_sdet_model_v1";
-
-function getApiKey() {
-  return localStorage.getItem(AI_API_KEY_STORAGE) || "";
-}
-
-function getAiModel() {
-  return localStorage.getItem(AI_MODEL_STORAGE) || "gemini-2.5-flash";
-}
-
 function saveAiSettings() {
   const keyInput = document.getElementById("gemini-api-key-input");
   const modelSelect = document.getElementById("gemini-model-select");
@@ -646,9 +764,14 @@ function saveAiSettings() {
   if (keyInput) localStorage.setItem(AI_API_KEY_STORAGE, keyInput.value.trim());
   if (modelSelect) localStorage.setItem(AI_MODEL_STORAGE, modelSelect.value);
 
+  if (currentUser) {
+    currentUser.tier = keyInput.value.trim() ? "Gemini Pro" : "Free Learner";
+    saveUserProfile(currentUser);
+  }
+
   updateAiStatusBadge();
   closeAiSettingsModal();
-  addBotMessage("✅ **API Key & Model settings saved successfully!** Ab aap Gemini AI se koi bhi question pooch sakte hain.");
+  addBotMessage("✅ **API Key & Model settings saved successfully!** Ab aap Gemini Pro AI se koi bhi question pooch sakte hain.");
 }
 
 function updateAiStatusBadge() {
@@ -656,7 +779,7 @@ function updateAiStatusBadge() {
   const key = getApiKey();
   if (badge) {
     if (key) {
-      badge.innerText = `Gemini (${getAiModel()}) • Active`;
+      badge.innerText = `Gemini Pro (${getAiModel()}) • Active`;
       badge.style.color = "var(--accent-emerald)";
     } else {
       badge.innerText = `AI Ready • Built-in Mentor`;
@@ -719,10 +842,11 @@ async function callGeminiApi(prompt) {
   const model = getAiModel();
 
   const completed = getCompletedLessons();
-  const contextSummary = `User is learning QA SDET. Current active document/context: '${currentActiveDocument}'. Completed lessons: ${completed.length}/22.`;
+  const userName = currentUser ? currentUser.name : "Hariom Prajapati";
+  const contextSummary = `Student: ${userName}. Current active document/context: '${currentActiveDocument}'. Completed lessons: ${completed.length}/22. Tier: ${getApiKey() ? 'Gemini Pro' : 'Free'}.`;
 
   const systemInstruction = `You are an elite Senior Staff SDET (Software Development Engineer in Test) and mentor teaching Playwright, JavaScript, TypeScript, API Testing, Performance Testing (k6), Docker/Kubernetes, and Test Framework Architecture.
-Always respond in clear, respectful, encouraging Hinglish/English with polite pronouns (Aap, Aapka). Provide clean, production-grade code examples, explain the 'Why' behind every pattern, analyze Time/Space Big-O complexity when relevant, and follow modern SDET best practices (e.g. Page Object Model, Web-First assertions, avoid hardcoded sleeps).`;
+The student's name is ${userName}. Always address them respectfully (e.g. "${userName.split(' ')[0]} ji", using polite pronouns "Aap", "Aapka"). Provide clean, production-grade code examples, explain the 'Why' behind every pattern, analyze Time/Space Big-O complexity when relevant, and follow modern SDET best practices.`;
 
   if (!apiKey) {
     // Intelligent built-in tutor response if no API key is provided
@@ -756,25 +880,26 @@ Always respond in clear, respectful, encouraging Hinglish/English with polite pr
   return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received from Gemini.";
 }
 
-// Smart Local Fallback Response Engine (Zero-configuration instant help)
+// Smart Local Fallback Response Engine
 function generateFallbackAiResponse(prompt) {
   const lower = prompt.toLowerCase();
+  const name = currentUser ? currentUser.name.split(" ")[0] : "Learner";
 
   if (lower.includes("track") || lower.includes("next step") || lower.includes("milestone")) {
     const completed = getCompletedLessons();
-    return `📈 **Aapki Learning Progress Analysis:**\n\n- **Completed Lessons:** ${completed.length} of 22 (${Math.round((completed.length/22)*100)}%)\n- **Recommendation:**\n  1. Agar aapne Phase 1 (JS, TS, SQL) pura kiya hai, toh **Phase 2 (Playwright E2E & API Framework)** par focus karein.\n  2. Roz kam se kam 1 coding challenge solve karein.\n  3. Practice Project: **\`projects/e2e-test-framework\`** ko run karke POM structure samjhein.\n\n*(Tip: Live Gemini 3 ke saath unlimited conversation ke liye upar ⚙️ Settings mein apni API Key enter karein!)*`;
+    return `📈 **${name} ji, Aapki Learning Progress Analysis:**\n\n- **Completed Lessons:** ${completed.length} of 22 (${Math.round((completed.length/22)*100)}%)\n- **Personalized Recommendation:**\n  1. Agar aapne Phase 1 (JS, TS, SQL) pura kiya hai, toh **Phase 2 (Playwright E2E & API Framework)** par focus karein.\n  2. Roz kam se kam 1 coding challenge solve karein.\n  3. Practice Project: **\`projects/e2e-test-framework\`** ko run karke POM structure samjhein.\n\n*(Tip: Live Gemini Pro ke saath unlimited conversation ke liye upar ⚙️ Settings mein apni API Key enter karein!)*`;
   }
 
   if (lower.includes("review") || lower.includes("code")) {
     const code = document.getElementById("code-area")?.value || "";
-    return `🤖 **Code Review & Best Practice Feedback:**\n\n\`\`\`javascript\n${code.slice(0, 300)}...\n\`\`\`\n\n✅ **Strengths:** Clean structure aur focused logic.\n💡 **SDET Best Practice Tips:**\n- Hamesha \`const\` ko pehle prefer karein, value badalni ho tabhi \`let\` use karein.\n- Loops mein array transformation ke liye \`map\` / \`reduce\` prefer karein.\n- Edge cases (null/undefined inputs, empty array) ko validate karein.\n\n*(Live line-by-line Gemini review ke liye ⚙️ Settings mein apni API Key save karein!)*`;
+    return `🤖 **Code Review & Best Practice Feedback for ${name} ji:**\n\n\`\`\`javascript\n${code.slice(0, 300)}...\n\`\`\`\n\n✅ **Strengths:** Clean structure aur focused logic.\n💡 **SDET Best Practice Tips:**\n- Hamesha \`const\` ko pehle prefer karein, value badalni ho tabhi \`let\` use karein.\n- Loops mein array transformation ke liye \`map\` / \`reduce\` prefer karein.\n- Edge cases (null/undefined inputs, empty array) ko validate karein.\n\n*(Live line-by-line Gemini Pro review ke liye ⚙️ Settings mein apni API Key save karein!)*`;
   }
 
   if (lower.includes("playwright") || lower.includes("flaky")) {
     return `🎭 **Top 3 Playwright Automation Best Practices:**\n\n1. **Use Web-First Auto-Retrying Assertions:**\n   \`await expect(page.getByRole('button')).toBeVisible();\` — kabhi bhi static \`waitForTimeout\` mat use karein.\n2. **Custom Fixtures for Authentication:**\n   Har test mein login form bharne ke bajay \`storageState\` ya authenticated fixture use karein.\n3. **Locator Hierarchy:**\n   XPath ke bajay \`getByRole\`, \`getByText\`, aur \`getByTestId\` use karein jo resilient hote hain.`;
   }
 
-  return `🤖 **Gemini SDET Mentor Response:**\n\nAapka sawaal: *"${prompt}"*\n\nSDET framework development mein sabse important rule hai: **Modular Architecture (POM) + Web-First Auto Retries + Isolated Test Data**.\n\nAap jis bhi topic ya test case mein phas rahe hain, bataiye main step-by-step explain karunga!\n\n*(Unlimited personalized reasoning ke liye ⚙️ Settings icon par click karke apni Google Gemini API Key add karein).*`;
+  return `🤖 **Gemini SDET Mentor Response for ${name} ji:**\n\nAapka sawaal: *"${prompt}"*\n\nSDET framework development mein sabse important rule hai: **Modular Architecture (POM) + Web-First Auto Retries + Isolated Test Data**.\n\nAap jis bhi topic ya test case mein phas rahe hain, bataiye main step-by-step explain karunga!\n\n*(Unlimited personalized reasoning ke liye ⚙️ Settings icon par click karke apni Google Gemini API Key add karein).*`;
 }
 
 // Handle Send Message
@@ -1104,8 +1229,8 @@ if (resetCodeBtn && challengeSelect && codeArea && consoleOutput) {
 
 // Initial Boot
 window.addEventListener("DOMContentLoaded", () => {
+  checkAuthStatus();
   renderPhases();
   renderProjects();
   updateProgressTracker();
-  updateAiStatusBadge();
 });
