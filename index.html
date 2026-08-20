@@ -22,6 +22,13 @@
   <!-- ============================================================ -->
   <div id="auth-gate" class="auth-gate-overlay">
     <div class="auth-card">
+      
+      <!-- Top Navigation in Auth Card with Back Button & Close -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <button class="btn-back" onclick="skipAuthAndExplore()">← Back / Browse as Guest</button>
+        <button class="modal-close" style="position: static; width: 32px; height: 32px; font-size: 1rem;" onclick="skipAuthAndExplore()" title="Close">✕</button>
+      </div>
+
       <div class="auth-badge">⚡ SDET Master Hub</div>
       <h2 class="auth-title">Welcome to QA SDET Master Course</h2>
       <p class="auth-sub">Sign in with Google to activate your personalized learning roadmap, live progress tracking, and Gemini Pro AI mentorship.</p>
@@ -50,6 +57,12 @@
             <div style="font-size: 0.8rem; color: var(--text-muted);">hariom@automation.com (SDET Candidate)</div>
           </div>
           <span style="color: var(--accent-cyan); font-size: 0.85rem; font-weight: 600;">Connect ➔</span>
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+          <button class="btn-outline" style="width: 100%; font-size: 0.85rem;" onclick="skipAuthAndExplore()">
+            ← Back to Free Course (Browse as Guest)
+          </button>
         </div>
       </div>
 
@@ -106,7 +119,7 @@
         <span class="user-header-name" id="header-name">Hariom Prajapati</span>
         <span class="user-header-tier" id="header-tier">✨ Gemini Pro Active</span>
       </div>
-      <button class="user-signout-btn" onclick="handleSignOut()" title="Sign Out">🚪</button>
+      <button class="user-signout-btn" onclick="handleSignOut()" title="Sign Out / Change Account">🚪</button>
     </div>
   </header>
 

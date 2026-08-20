@@ -336,6 +336,19 @@ window.goBackToSignIn = function () {
   document.getElementById("step-gemini-pro").style.display = "none";
 };
 
+window.skipAuthAndExplore = function () {
+  document.getElementById("auth-gate").classList.add("hidden");
+  if (!currentUser) {
+    currentUser = {
+      name: "Hariom Prajapati",
+      email: "hariom@automation.com",
+      avatar: "HP",
+      tier: "Free Learner",
+    };
+    saveUserProfile(currentUser);
+  }
+};
+
 window.completeOnboarding = function (isPro) {
   const keyInput = document.getElementById("gate-gemini-key");
   if (isPro && keyInput && keyInput.value.trim()) {
