@@ -1,0 +1,13 @@
+{
+  "name": "kafka-websocket-test-harness",
+  "version": "1.0.0",
+  "description": "Test Harness for Event-Driven Architectures, Message Queues, and Real-Time WebSocket Streaming APIs.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": ["websockets", "kafka", "event-driven", "sdet", "streaming-tests"],
+  "author": "Hariom",
+  "license": "MIT"
+}

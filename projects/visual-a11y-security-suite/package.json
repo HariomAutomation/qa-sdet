@@ -1,0 +1,20 @@
+{
+  "name": "visual-a11y-security-suite",
+  "version": "1.0.0",
+  "description": "Specialized Test Automation Suite combining Visual Regression, Accessibility (a11y with axe-core), and Automated Security Header & Injection Scans.",
+  "type": "module",
+  "scripts": {
+    "test:a11y": "playwright test tests/a11y.spec.ts",
+    "test:visual": "playwright test tests/visual-regression.spec.ts",
+    "test:security": "playwright test tests/security-headers.spec.ts",
+    "test:all": "playwright test"
+  },
+  "keywords": ["playwright", "accessibility", "a11y", "axe-core", "visual-regression", "security-testing"],
+  "author": "Hariom",
+  "license": "MIT",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.8.5",
+    "@playwright/test": "^1.42.0",
+    "typescript": "^5.3.3"
+  }
+}

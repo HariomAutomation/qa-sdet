@@ -1,0 +1,13 @@
+{
+  "name": "test-data-manager",
+  "version": "1.0.0",
+  "description": "Database seeding, fixture management, and transaction-isolated test data cleanup framework for SDET test suites.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": ["sdet", "test-data", "sqlite", "seeder", "isolation", "qa"],
+  "author": "Hariom",
+  "license": "MIT"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "data-processor-cli",
+  "version": "1.0.0",
+  "description": "Production-ready CLI tool for processing, transforming, and validating CSV/JSON datasets with custom errors and ES6+ async streams.",
+  "main": "src/index.js",
+  "bin": {
+    "data-proc": "./bin/cli.js"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": ["cli", "csv", "json", "data-processor", "sdet"],
+  "author": "Hariom",
+  "license": "MIT"
+}

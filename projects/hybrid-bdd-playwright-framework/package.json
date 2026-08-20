@@ -1,0 +1,20 @@
+{
+  "name": "hybrid-bdd-playwright-framework",
+  "version": "1.0.0",
+  "description": "Enterprise-grade BDD Test Automation Framework combining Cucumber.js, Gherkin features, Playwright, TypeScript, and Allure HTML reporting.",
+  "type": "module",
+  "scripts": {
+    "test:bdd": "cucumber-js",
+    "test:smoke": "cucumber-js --tags '@smoke'",
+    "test:regression": "cucumber-js --tags '@regression'"
+  },
+  "keywords": ["cucumber", "playwright", "bdd", "gherkin", "typescript", "sdet"],
+  "author": "Hariom",
+  "license": "MIT",
+  "devDependencies": {
+    "@cucumber/cucumber": "^10.3.0",
+    "@playwright/test": "^1.42.0",
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3"
+  }
+}

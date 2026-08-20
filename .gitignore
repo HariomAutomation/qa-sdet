@@ -1,0 +1,12 @@
+node_modules/
+.DS_Store
+*.log
+playwright-report/
+test-results/
+.cache/
+.nyc_output/
+coverage/
+dist/
+build/
+.env
+.env.local

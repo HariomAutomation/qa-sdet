@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QA SDET Master Dashboard & Interactive Hub</title>
+  <meta name="description" content="Production-ready QA SDET Master Curriculum, Live Coding Playground, and Automation Frameworks Hub.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <link rel="stylesheet" href="index.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="logo-badge">⚡</div>
+      <div>
+        <h1>SDET Master Hub</h1>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <button class="nav-btn active" data-tab="tab-curriculum">Curriculum & Notes</button>
+      <button class="nav-btn" data-tab="tab-projects">9 Projects Portfolio</button>
+      <button class="nav-btn" data-tab="tab-playground">Live Code Playground</button>
+      <button class="nav-btn" data-tab="tab-cheatsheets">Cheatsheets & Interview</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Progress Tracker -->
+    <div class="progress-card">
+      <div class="progress-info">
+        <span class="progress-title">🎯 Course Progress Tracker</span>
+        <span class="progress-sub" id="progress-text">0 of 22 lessons completed</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <span class="progress-pct" id="progress-pct">0%</span>
+    </div>
+
+    <!-- Hero Banner -->
+    <section class="hero-banner">
+      <div class="hero-content">
+        <h2>Enterprise QA SDET Master Hub</h2>
+        <p>Complete 5-Phase curriculum covering Foundation, Playwright E2E, API Testing, Performance (k6), Docker/K8s, a11y & Security, and Senior Interview Framework Design.</p>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-box">
+          <div class="stat-num">5</div>
+          <div class="stat-label">Phases</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">9</div>
+          <div class="stat-label">Frameworks</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">12</div>
+          <div class="stat-label">Cheatsheets</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 1: Curriculum & Roadmap -->
+    <section id="tab-curriculum" class="tab-content active">
+      <div class="phases-grid" id="phases-container">
+        <!-- Rendered via JavaScript from /api/curriculum -->
+      </div>
+    </section>
+
+    <!-- Tab 2: 9 Projects Portfolio -->
+    <section id="tab-projects" class="tab-content">
+      <div class="projects-grid" id="projects-container">
+        <!-- Rendered via JavaScript from /api/projects -->
+      </div>
+    </section>
+
+    <!-- Tab 3: Live Code Playground -->
+    <section id="tab-playground" class="tab-content">
+      <div class="playground-container">
+        
+        <div class="code-editor-box">
+          <div class="editor-header">
+            <h3>💻 Live SDET Code Challenge</h3>
+            <select id="challenge-select" style="background: #1e293b; color: #fff; border: 1px solid #334155; padding: 0.45rem 0.75rem; border-radius: 6px; outline: none; font-size: 0.9rem;">
+              <option value="twoSum">1. Two Sum (O(N) HashMap)</option>
+              <option value="validParentheses">2. Valid Parentheses (Stack Selector Matching)</option>
+              <option value="groupTestResults">3. Group Test Execution Metrics (Reduce)</option>
+              <option value="flattenArray">4. Flatten Deeply Nested Array (Recursion)</option>
+              <option value="deepClone">5. Deep Clone Object Without JSON (Recursion)</option>
+              <option value="firstUniqueChar">6. First Unique Character in String</option>
+            </select>
+          </div>
+          <textarea id="code-area" class="code-area" spellcheck="false"></textarea>
+          <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem;">
+            <button id="run-code-btn" class="btn-primary">▶ Execute & Run Tests</button>
+            <button id="show-solution-btn" class="btn-outline">💡 Show Solution</button>
+            <button id="reset-code-btn" class="btn-outline">Reset</button>
+          </div>
+        </div>
+
+        <div class="output-box">
+          <div class="editor-header">
+            <h3>⚡ Test Runner Terminal Output</h3>
+          </div>
+          <div id="console-output" class="console-output">// Click 'Execute & Run Tests' to run code in browser...</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Tab 4: Cheatsheets -->
+    <section id="tab-cheatsheets" class="tab-content">
+      <div class="cheatsheets-grid">
+
+        <div class="card" onclick="openMarkdownModal('resources/cheatsheets/01-js-basics-cheatsheet.md', 'JavaScript Basics Cheatsheet')">
+          <h3 class="card-title">📄 01: JavaScript Basics</h3>
+          <p class="card-desc">Data types, truthy/falsy, variable scopes (var/let/const), and operators.</p>
+          <span class="card-hint">Read Cheatsheet ➔</span>
+        </div>
+
+        <div class="card" onclick="openMarkdownModal('resources/cheatsheets/02-functions-scope-cheatsheet.md', 'Functions & Scope Cheatsheet')">
+          <h3 class="card-title">📄 02: Functions & Scopes</h3>
+          <p class="card-desc">Closures, arrow functions, this binding, and lexical environment.</p>
+          <span class="card-hint">Read Cheatsheet ➔</span>
+        </div>
+
+        <div class="card" onclick="openMarkdownModal('resources/cheatsheets/03-typescript-cheatsheet.md', 'TypeScript Complete Cheatsheet')">
+          <h3 class="card-title">📄 03: TypeScript Complete</h3>
+          <p class="card-desc">Interfaces, Types, Generics, Pick/Omit/Partial, and Type Guards.</p>
+          <span class="card-hint">Read Cheatsheet ➔</span>
+        </div>
+
+        <div class="card" onclick="openMarkdownModal('resources/cheatsheets/04-sql-cheatsheet.md', 'SQL & Database Cheatsheet')">
+          <h3 class="card-title">📄 04: SQL & Database</h3>
+          <p class="card-desc">JOINs, GROUP BY, Window functions, Subqueries, and Indexing.</p>
+          <span class="card-hint">Read Cheatsheet ➔</span>
+        </div>
+
+        <div class="card" onclick="openMarkdownModal('resources/cheatsheets/05-playwright-cheatsheet.md', 'Playwright Complete Cheatsheet')">
+          <h3 class="card-title">📄 05: Playwright Complete</h3>
+          <p class="card-desc">Locators, Web-First assertions, auto-waiting, POM, and network mocking.</p>
+          <span class="card-hint">Read Cheatsheet ➔</span>
+        </div>
+
+        <div class="card" onclick="openMarkdownModal('resources/cheatsheets/06-api-testing-cheatsheet.md', 'API Testing Cheatsheet')">
+          <h3 class="card-title">📄 06: API Testing</h3>
+          <p class="card-desc">HTTP status codes, Supertest, Zod schema validation, and Auth headers.</p>
+          <span class="card-hint">Read Cheatsheet ➔</span>
+        </div>
+
+        <div class="card" onclick="openMarkdownModal('resources/cheatsheets/08-design-patterns-cheatsheet.md', 'Design Patterns Cheatsheet')">
+          <h3 class="card-title">📄 08: Design Patterns</h3>
+          <p class="card-desc">Factory, Builder, Singleton, Facade, Strategy, and Observer patterns.</p>
+          <span class="card-hint">Read Cheatsheet ➔</span>
+        </div>
+
+        <div class="card" onclick="openMarkdownModal('resources/cheatsheets/09-k6-performance-cheatsheet.md', 'k6 Performance Cheatsheet')">
+          <h3 class="card-title">📄 09: k6 Performance</h3>
+          <p class="card-desc">VUs, Load/Stress/Spike/Soak stages, p95 SLA thresholds, and Grafana.</p>
+          <span class="card-hint">Read Cheatsheet ➔</span>
+        </div>
+
+        <div class="card" onclick="openMarkdownModal('resources/cheatsheets/10-docker-k8s-cheatsheet.md', 'Docker & Kubernetes Cheatsheet')">
+          <h3 class="card-title">📄 10: Docker & Kubernetes</h3>
+          <p class="card-desc">Multi-stage test images, Docker Compose, and ephemeral K8s test jobs.</p>
+          <span class="card-hint">Read Cheatsheet ➔</span>
+        </div>
+
+        <div class="card" onclick="openMarkdownModal('resources/cheatsheets/11-a11y-security-cheatsheet.md', 'a11y & Security Cheatsheet')">
+          <h3 class="card-title">📄 11: a11y & Security</h3>
+          <p class="card-desc">WCAG 2.1 AA axe-core rules, OWASP Top 10 vectors, and security headers.</p>
+          <span class="card-hint">Read Cheatsheet ➔</span>
+        </div>
+
+        <div class="card" onclick="openMarkdownModal('resources/cheatsheets/12-sdet-interview-handbook.md', 'Senior SDET Interview Handbook')">
+          <h3 class="card-title">📄 12: SDET Interview Handbook</h3>
+          <p class="card-desc">Top 50 technical interview answers, framework design, and STAR behavioral questions.</p>
+          <span class="card-hint">Read Cheatsheet ➔</span>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Interactive Modal Container -->
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div id="modal-body">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

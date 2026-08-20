@@ -1,0 +1,19 @@
+{
+  "name": "test-utilities-library",
+  "version": "1.0.0",
+  "description": "Production-grade type-safe test utilities library for Playwright, API & Unit testing frameworks in TypeScript.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "npx -y -p typescript tsc",
+    "test": "node --test dist/tests/*.test.js",
+    "pretest": "npm run build"
+  },
+  "keywords": ["typescript", "testing", "sdet", "test-factory", "decorators", "fixtures"],
+  "author": "Hariom",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

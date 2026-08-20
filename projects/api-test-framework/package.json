@@ -1,0 +1,13 @@
+{
+  "name": "api-test-framework",
+  "version": "1.0.0",
+  "description": "Production-grade custom REST API Testing Framework with automated retries, schema validation, interceptors, and CRUD test suites.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": ["api-testing", "sdet", "rest-api", "schema-validation", "supertest"],
+  "author": "Hariom",
+  "license": "MIT"
+}
