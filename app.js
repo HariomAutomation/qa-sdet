@@ -266,6 +266,7 @@ const PROJECTS_DATA = [
 // User Profile State
 let currentUser = null;
 let currentActiveDocument = "Exploring SDET Curriculum";
+let lastActivePhaseId = null;
 
 function getUserProfile() {
   try {
@@ -303,7 +304,6 @@ function checkAuthStatus() {
 }
 
 window.handleGoogleSignIn = function () {
-  // Simulated Google Sign-In with standard user account
   const defaultUser = {
     name: "Hariom Prajapati",
     email: "hariom@automation.com",
@@ -329,6 +329,11 @@ window.handleQuickConnect = function (name, email) {
 
   document.getElementById("step-signin").style.display = "none";
   document.getElementById("step-gemini-pro").style.display = "block";
+};
+
+window.goBackToSignIn = function () {
+  document.getElementById("step-signin").style.display = "block";
+  document.getElementById("step-gemini-pro").style.display = "none";
 };
 
 window.completeOnboarding = function (isPro) {
@@ -569,6 +574,7 @@ window.openPhaseModal = function (phaseId) {
   const phase = CURRICULUM_DATA.find((p) => p.id === phaseId);
   if (!phase) return;
 
+  lastActivePhaseId = phaseId;
   currentActiveDocument = phase.name;
   updateProgressTracker();
 
@@ -596,9 +602,9 @@ window.openPhaseModal = function (phaseId) {
           <div class="lesson-left">
             <input type="checkbox" class="lesson-checkbox" ${isChecked ? "checked" : ""} 
               onchange="toggleLessonComplete('${lesson.file}', event); openPhaseModal('${phase.id}');">
-            <span class="lesson-name" onclick="openMarkdownModal('${lesson.file}', '${lesson.name}')">${lesson.name}</span>
+            <span class="lesson-name" onclick="openMarkdownModal('${lesson.file}', '${lesson.name}', '${phase.id}')">${lesson.name}</span>
           </div>
-          <button class="lesson-btn" onclick="openMarkdownModal('${lesson.file}', '${lesson.name}')">Read Notes 📖</button>
+          <button class="lesson-btn" onclick="openMarkdownModal('${lesson.file}', '${lesson.name}', '${phase.id}')">Read Notes 📖</button>
         </div>
       `;
     });
@@ -614,9 +620,13 @@ window.openPhaseModal = function (phaseId) {
 };
 
 // Open Markdown Reader Modal
-window.openMarkdownModal = async function (filePath, title) {
+window.openMarkdownModal = async function (filePath, title, phaseId) {
   currentActiveDocument = title || filePath;
   updateProgressTracker();
+
+  const backButtonHtml = phaseId 
+    ? `<button class="btn-back" onclick="openPhaseModal('${phaseId}')">← Back to Phase Lessons</button>`
+    : `<button class="btn-back" onclick="closeModal()">← Back</button>`;
 
   modalBody.innerHTML = `
     <div style="text-align: center; padding: 3rem;">
@@ -631,10 +641,13 @@ window.openMarkdownModal = async function (filePath, title) {
     const htmlContent = marked.parse(content);
 
     modalBody.innerHTML = `
-      <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem;">
-        <div>
-          <span class="pill" style="color: var(--accent-indigo);">${filePath}</span>
-          <h2 style="font-size: 1.6rem; color: #fff; margin-top: 0.25rem;">${title || "Document Reader"}</h2>
+      <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          ${backButtonHtml}
+          <div>
+            <span class="pill" style="color: var(--accent-indigo);">${filePath}</span>
+            <h2 style="font-size: 1.4rem; color: #fff; margin-top: 0.2rem;">${title || "Document Reader"}</h2>
+          </div>
         </div>
         <div style="display: flex; gap: 0.5rem;">
           <button class="btn-ai" onclick="askAiAboutCurrentLesson('${filePath}')">✨ Ask AI Mentor</button>
@@ -664,8 +677,12 @@ window.openProjectModal = function (projectId) {
   updateProgressTracker();
 
   modalBody.innerHTML = `
-    <div style="margin-bottom: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <button class="btn-back" onclick="closeModal()">← Back to Projects Portfolio</button>
       <span class="phase-tag tag-p2">${project.tag}</span>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
       <h2 style="font-size: 1.8rem; font-weight: 800; color: #fff; margin-top: 0.5rem;">${project.title}</h2>
       <p style="color: var(--text-muted); font-size: 1rem;">${project.desc}</p>
     </div>

@@ -26,7 +26,7 @@
       <h2 class="auth-title">Welcome to QA SDET Master Course</h2>
       <p class="auth-sub">Sign in with Google to activate your personalized learning roadmap, live progress tracking, and Gemini Pro AI mentorship.</p>
 
-      <!-- Sign-In Form -->
+      <!-- Sign-In Form (Step 1) -->
       <div class="auth-form-step" id="step-signin">
         <!-- Google Sign-In Official Styled Button -->
         <button class="btn-google" onclick="handleGoogleSignIn()">
@@ -53,12 +53,13 @@
         </div>
       </div>
 
-      <!-- Gemini Pro API Key Step -->
+      <!-- Gemini Pro API Key Step (Step 2 with Back Button) -->
       <div class="auth-form-step" id="step-gemini-pro" style="display: none; text-align: left;">
-        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;">
+          <button class="btn-back" onclick="goBackToSignIn()">← Back to Sign In</button>
           <span class="pill" style="background: rgba(168, 85, 247, 0.2); color: var(--accent-purple);">Step 2 of 2</span>
-          <span style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 600;">Gemini Pro AI Activation</span>
         </div>
+
         <h3 style="font-size: 1.15rem; color: #fff; margin-bottom: 0.4rem;">Activate Gemini Pro SDET Mentor</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
           Enter your Gemini API Key for unlimited code reviews, AI progress tracking, and 24/7 doubt resolution.
@@ -68,7 +69,7 @@
         <input type="password" id="gate-gemini-key" placeholder="AIzaSy..." class="auth-input">
 
         <div style="display: flex; gap: 0.5rem; margin-top: 1.25rem;">
-          <button class="btn-outline" style="flex: 1;" onclick="completeOnboarding(false)">Skip for now (Free Tier)</button>
+          <button class="btn-outline" style="flex: 1;" onclick="completeOnboarding(false)">Skip (Free Tier)</button>
           <button class="btn-primary" style="flex: 1;" onclick="completeOnboarding(true)">Activate Pro & Start 🚀</button>
         </div>
       </div>
