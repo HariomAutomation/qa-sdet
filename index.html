@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QA SDET Master Dashboard & Interactive Hub</title>
-  <meta name="description" content="Production-ready QA SDET Master Curriculum, Live Coding Playground, and Automation Frameworks Hub.">
+  <title>QA SDET Master Dashboard & AI Learning Mentor</title>
+  <meta name="description" content="Production-ready QA SDET Master Curriculum, Live Coding Playground, Automation Frameworks, and Gemini AI Learning Mentor.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -28,6 +28,7 @@
       <button class="nav-btn" data-tab="tab-projects">9 Projects Portfolio</button>
       <button class="nav-btn" data-tab="tab-playground">Live Code Playground</button>
       <button class="nav-btn" data-tab="tab-cheatsheets">Cheatsheets & Interview</button>
+      <button class="ai-nav-btn" onclick="toggleAiDrawer()">✨ AI Mentor</button>
     </nav>
   </header>
 
@@ -48,7 +49,7 @@
     <section class="hero-banner">
       <div class="hero-content">
         <h2>Enterprise QA SDET Master Hub</h2>
-        <p>Complete 5-Phase curriculum covering Foundation, Playwright E2E, API Testing, Performance (k6), Docker/K8s, a11y & Security, and Senior Interview Framework Design.</p>
+        <p>Complete 5-Phase curriculum covering Foundation, Playwright E2E, API Testing, Performance (k6), Docker/K8s, a11y & Security, and Senior Interview Framework Design with Gemini AI Mentor support.</p>
       </div>
       <div class="hero-stats">
         <div class="stat-box">
@@ -63,20 +64,24 @@
           <div class="stat-num">12</div>
           <div class="stat-label">Cheatsheets</div>
         </div>
+        <div class="stat-box" style="border-color: rgba(99, 102, 241, 0.4); background: rgba(99, 102, 241, 0.1);">
+          <div class="stat-num" style="color: var(--accent-purple);">AI</div>
+          <div class="stat-label" style="color: var(--accent-cyan);">Gemini 3 Mentor</div>
+        </div>
       </div>
     </section>
 
     <!-- Tab 1: Curriculum & Roadmap -->
     <section id="tab-curriculum" class="tab-content active">
       <div class="phases-grid" id="phases-container">
-        <!-- Rendered via JavaScript from /api/curriculum -->
+        <!-- Rendered dynamically -->
       </div>
     </section>
 
     <!-- Tab 2: 9 Projects Portfolio -->
     <section id="tab-projects" class="tab-content">
       <div class="projects-grid" id="projects-container">
-        <!-- Rendered via JavaScript from /api/projects -->
+        <!-- Rendered dynamically -->
       </div>
     </section>
 
@@ -97,8 +102,9 @@
             </select>
           </div>
           <textarea id="code-area" class="code-area" spellcheck="false"></textarea>
-          <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem;">
+          <div style="display: flex; gap: 0.6rem; margin-top: 0.75rem; flex-wrap: wrap;">
             <button id="run-code-btn" class="btn-primary">▶ Execute & Run Tests</button>
+            <button id="ai-review-btn" class="btn-ai" onclick="askAiToReviewCode()">🤖 AI Code Review</button>
             <button id="show-solution-btn" class="btn-outline">💡 Show Solution</button>
             <button id="reset-code-btn" class="btn-outline">Reset</button>
           </div>
@@ -189,12 +195,87 @@
 
   </main>
 
-  <!-- Interactive Modal Container -->
+  <!-- Modal Container -->
   <div id="modal-overlay" class="modal-overlay">
     <div class="modal-content">
       <button class="modal-close" onclick="closeModal()">✕</button>
-      <div id="modal-body">
-        <!-- Injected via app.js -->
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Floating AI Mentor Trigger Button -->
+  <button class="floating-ai-btn" onclick="toggleAiDrawer()">
+    <span class="ai-sparkle">✨</span>
+    <span>Ask AI Mentor</span>
+  </button>
+
+  <!-- Gemini AI Mentor Drawer -->
+  <aside id="ai-drawer" class="ai-drawer">
+    <div class="ai-drawer-header">
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <div class="ai-avatar">🤖</div>
+        <div>
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: #fff;">Gemini SDET Mentor</h3>
+          <span class="ai-status-badge" id="ai-status-text">AI Ready • Online</span>
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <button class="ai-icon-btn" onclick="openAiSettingsModal()" title="API Key Settings">⚙️</button>
+        <button class="ai-icon-btn" onclick="toggleAiDrawer()" title="Close">✕</button>
+      </div>
+    </div>
+
+    <div class="ai-drawer-context" id="ai-context-pill">
+      📍 <strong>Current Context:</strong> Exploring SDET Curriculum
+    </div>
+
+    <!-- Quick Action Prompts -->
+    <div class="ai-prompts-row">
+      <button class="ai-prompt-chip" onclick="sendQuickPrompt('track')">📈 Suggest Next Step</button>
+      <button class="ai-prompt-chip" onclick="sendQuickPrompt('review')">🔍 Review My Code</button>
+      <button class="ai-prompt-chip" onclick="sendQuickPrompt('interview')">🎯 Mock Interview Question</button>
+      <button class="ai-prompt-chip" onclick="sendQuickPrompt('playwright')">🎭 Playwright Best Practice</button>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="ai-chat-messages" id="ai-chat-messages">
+      <div class="ai-message ai-bot">
+        <div class="ai-msg-content">
+          नमस्ते! 🙏 Main aapka <strong>Gemini SDET AI Mentor</strong> hoon.<br><br>
+          Aap course mein kahin bhi phas jayein, kisi concept (Closures, Playwright, API, Docker) ko samajhna ho, ya apne code ka <strong>Best Practice & Big-O Review</strong> karwana ho, toh mujhse yahan pooch sakte hain!
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Bar -->
+    <div class="ai-input-wrap">
+      <textarea id="ai-user-input" class="ai-input" placeholder="Poochiye koi bhi sawaal (e.g. How to handle auth in Playwright?)..." rows="2"></textarea>
+      <button id="ai-send-btn" class="ai-send-btn" onclick="handleAiSendMessage()">➤</button>
+    </div>
+  </aside>
+
+  <!-- AI API Key Settings Modal -->
+  <div id="ai-settings-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 550px;">
+      <button class="modal-close" onclick="closeAiSettingsModal()">✕</button>
+      <h3 style="font-size: 1.3rem; color: #fff; margin-bottom: 0.5rem;">⚙️ Gemini AI Mentor Settings</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
+        Aap direct Google Gemini API Key enter kar sakte hain. Yeh key sirf aapke browser ke <code>localStorage</code> mein secure rehti hai aur kisi server par save nahi hoti.
+      </p>
+
+      <label style="font-size: 0.85rem; font-weight: 600; color: var(--accent-cyan); display: block; margin-bottom: 0.3rem;">Gemini API Key</label>
+      <input type="password" id="gemini-api-key-input" placeholder="AIzaSy..." style="width: 100%; padding: 0.75rem; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #fff; font-family: var(--font-mono); margin-bottom: 1rem; outline: none;">
+
+      <label style="font-size: 0.85rem; font-weight: 600; color: var(--accent-cyan); display: block; margin-bottom: 0.3rem;">Gemini Model</label>
+      <select id="gemini-model-select" style="width: 100%; padding: 0.75rem; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #fff; margin-bottom: 1.5rem; outline: none;">
+        <option value="gemini-2.5-flash">Gemini 2.5 Flash (Fastest & Recommended)</option>
+        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+        <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+      </select>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button class="btn-outline" onclick="closeAiSettingsModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveAiSettings()">💾 Save Key</button>
       </div>
     </div>
   </div>
