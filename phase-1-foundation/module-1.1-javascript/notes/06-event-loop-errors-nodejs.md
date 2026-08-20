@@ -1,370 +1,138 @@
 # 📘 Module 1.1 — JavaScript Deep Dive
 
-## Lesson 6: Event Loop + Lesson 7: Error Handling + Lesson 8: Node.js Basics
+## Lesson 6: Event Loop, Error Handling & Node.js Fundamentals — Zero to Hero Guide
 
-> **Time:** ~4-5 hours  
-> **Goal:** JS runtime samajhna, robust error handling, Node.js fundamentals
+> **लक्ष्य (Goal):** JavaScript का इंजन पर्दे के पीछे कैसे काम करता है (Event Loop), गलतियों और एक्सेप्शन्स को सुरक्षित तरीके से कैसे संभालें (Error Handling), और Node.js के कोर मॉड्यूल्स का उपयोग कैसे करें।  
+> **भाषा शैली (Tone):** सरल, आदरपूर्ण और उदाहरणों से भरपूर (Hinglish).
 
 ---
 
-# Part A: Event Loop 🔄
+## 🌟 1. Event Loop — एयरपोर्ट बोर्डिंग का उदाहरण
 
-## How JavaScript Executes Code
+### 💡 Real-Life Analogy
+सोचिए एयरपोर्ट पर यात्रियों की बोर्डिंग लाइन:
+1. **Call Stack:** वह मुख्य गेट जहाँ एक समय में एक ही यात्री का पासपोर्ट चेक होता है (Single Threaded).
+2. **Microtask Queue (VIP Fast Track):** बिज़नेस क्लास / VIP यात्री (`Promise.then()`, `queueMicrotask`) — ये हमेशा आम लाइन से पहले अंदर जाते हैं!
+3. **Macrotask / Callback Queue (Regular Line):** साधारण यात्री (`setTimeout`, `setInterval`) — जब VIP लाइन पूरी तरह खाली हो जाती है, तभी इनका नंबर आता है।
 
 ```
-┌─────────────────────────────┐
-│       CALL STACK             │  ← Functions execute here (LIFO)
-│  (one thing at a time)       │
-└─────────────┬───────────────┘
-              │
-              ▼
-┌─────────────────────────────┐
-│     WEB APIs / Node APIs     │  ← setTimeout, fetch, DOM events
-│  (run in background)         │
-└─────────────┬───────────────┘
-              │ callback ready
-              ▼
-┌─────────────────────────────┐
-│    MICROTASK QUEUE           │  ← Promises (.then), queueMicrotask
-│  (HIGH PRIORITY)             │     Process FIRST before macrotasks
-└─────────────────────────────┘
-┌─────────────────────────────┐
-│    MACROTASK QUEUE           │  ← setTimeout, setInterval, I/O
-│  (LOWER PRIORITY)            │
-└─────────────────────────────┘
-              │
-              ▼
-         EVENT LOOP: "Call stack khaali hai? 
-                      Microtask queue check karo.
-                      Khaali? Macrotask queue se ek lo."
+┌─────────────────────────────────────────────────────────────┐
+│                      Event Loop Order                       │
+├─────────────────────────────────────────────────────────────┤
+│ 1. Synchronous Code (Call Stack में तुरंत चलेगा)             │
+│ 2. Microtasks (Promises / async-await)                      │
+│ 3. Macrotasks (setTimeout / setInterval / I/O Events)        │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## Priority Order: Microtasks > Macrotasks
+---
+
+## 2️⃣ Interview Classic Puzzle (आउटपुट क्रम समझें)
 
 ```javascript
-console.log("1: Script start");      // 🔵 Synchronous
+console.log("1: शुरू"); // Sync
 
 setTimeout(() => {
-  console.log("2: setTimeout");       // 🟡 Macrotask queue
+  console.log("2: setTimeout (Macrotask)");
 }, 0);
 
 Promise.resolve().then(() => {
-  console.log("3: Promise.then");     // 🔴 Microtask queue (PRIORITY!)
+  console.log("3: Promise (Microtask)");
 });
 
-queueMicrotask(() => {
-  console.log("4: queueMicrotask");   // 🔴 Microtask queue
-});
+console.log("4: समाप्त"); // Sync
 
-console.log("5: Script end");         // 🔵 Synchronous
-
-// OUTPUT ORDER:
-// 1: Script start      ← sync
-// 5: Script end         ← sync
-// 3: Promise.then       ← microtask (pehle)
-// 4: queueMicrotask     ← microtask
-// 2: setTimeout         ← macrotask (baad mein)
-```
-
-## Classic Interview Question
-
-```javascript
-console.log("1");
-
-setTimeout(() => console.log("2"), 0);
-
-Promise.resolve()
-  .then(() => {
-    console.log("3");
-    setTimeout(() => console.log("4"), 0);
-  })
-  .then(() => console.log("5"));
-
-setTimeout(() => {
-  console.log("6");
-  Promise.resolve().then(() => console.log("7"));
-}, 0);
-
-console.log("8");
-
-// OUTPUT: 1, 8, 3, 5, 2, 6, 7, 4
-// Explanation:
-// Sync: 1, 8
-// Microtasks: 3, 5 (promise chain)
-// Macrotask 1: 2 (first setTimeout)
-// Macrotask 2: 6 → then microtask 7
-// Macrotask 3: 4 (setTimeout from inside promise)
+// 🎯 आउटपुट का क्रम:
+// 1: शुरू
+// 4: समाप्त
+// 3: Promise (Microtask)
+// 2: setTimeout (Macrotask)
 ```
 
 ---
 
-# Part B: Error Handling 🛡️
+## 3️⃣ Error Handling — गलतियों को संभालना
 
-## try/catch/finally
-
-```javascript
-try {
-  const data = JSON.parse("invalid json");
-} catch (error) {
-  console.error("Type:", error.name);       // "SyntaxError"
-  console.error("Message:", error.message); // "Unexpected token i..."
-  console.error("Stack:", error.stack);     // Full stack trace
-} finally {
-  console.log("Cleanup — always runs"); // Success ya fail, dono mein chalega
-}
-
-// finally ka special case — return ke baad bhi chalega!
-function test() {
-  try {
-    return "try";
-  } finally {
-    console.log("finally runs!"); // Yeh chalega!
-  }
-}
-```
-
-## Custom Error Classes ⭐
+सॉफ्टवेयर ऑटोमेशन में अगर किसी एक टेस्ट में एरर आए, तो पूरा फ्रेमवर्क क्रैश नहीं होना चाहिए। इसके लिए हम `try...catch...finally` और **Custom Error Classes** का उपयोग करते हैं:
 
 ```javascript
-// Base custom error
-class AppError extends Error {
-  constructor(message, statusCode, errorCode) {
-    super(message);
-    this.name = this.constructor.name;
-    this.statusCode = statusCode;
-    this.errorCode = errorCode;
-    this.timestamp = new Date().toISOString();
-    Error.captureStackTrace(this, this.constructor);
+// अपनी खुद की कस्टम एरर क्लास बनाना:
+class ElementNotFoundError extends Error {
+  constructor(selector) {
+    super(`❌ वेब एलिमेंट DOM में नहीं मिला: '${selector}'`);
+    this.name = "ElementNotFoundError";
   }
 }
 
-// Specific errors
-class ValidationError extends AppError {
-  constructor(message, field) {
-    super(message, 400, "VALIDATION_ERROR");
-    this.field = field;
-  }
-}
+function clickButton(selector) {
+  const isElementVisible = false; // एलिमेंट नहीं दिखा
 
-class NotFoundError extends AppError {
-  constructor(resource, id) {
-    super(`${resource} with id ${id} not found`, 404, "NOT_FOUND");
-    this.resource = resource;
-    this.resourceId = id;
+  if (!isElementVisible) {
+    throw new ElementNotFoundError(selector);
   }
-}
-
-class APIError extends AppError {
-  constructor(message, statusCode = 500, response = null) {
-    super(message, statusCode, "API_ERROR");
-    this.response = response;
-  }
-}
-
-// Usage
-function findUser(id) {
-  if (!id) throw new ValidationError("ID is required", "id");
-  if (id < 0) throw new ValidationError("ID must be positive", "id");
-  // ... user nahi mila
-  throw new NotFoundError("User", id);
+  console.log("बटन क्लिक हुआ!");
 }
 
 try {
-  findUser(-1);
+  clickButton("#checkout-submit-btn");
 } catch (error) {
-  if (error instanceof ValidationError) {
-    console.log(`Validation failed on field: ${error.field}`);
-  } else if (error instanceof NotFoundError) {
-    console.log(`${error.resource} not found: ${error.resourceId}`);
+  if (error instanceof ElementNotFoundError) {
+    console.warn("⚠️ चेतावनी:", error.message);
+    console.log("📸 स्क्रीनशॉट कैप्चर किया गया!");
   } else {
-    console.log("Unexpected error:", error.message);
+    console.error("अनपेक्षित एरर:", error);
   }
+} finally {
+  console.log("🧹 टेस्ट क्लीनअप पूरा हुआ (ब्राउज़र बंद हुआ)।");
 }
 ```
 
-## Async Error Handling
+---
+
+## 4️⃣ Node.js Core Modules — फाइलें पढ़ना और पाथ संभालना
+
+Node.js आपको ऑपरेटिंग सिस्टम की फाइल्स और फोल्डर्स के साथ काम करने की शक्ति देता है:
 
 ```javascript
-// ❌ try/catch DOESN'T catch async errors without await
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// सुरक्षित क्रॉस-प्लेटफ़ॉर्म पाथ बनाना (Windows और Linux दोनों पर सही चले):
+const reportPath = path.join(__dirname, "..", "reports", "allure-results.json");
+console.log("रिपोर्ट का पाथ:", reportPath);
+```
+
+---
+
+## ✍️ Immediate Practice Challenge (स्वयं करके देखें)
+
+### 🎯 Practice Challenge:
+1. `ApiTimeoutError` नाम से एक कस्टम एरर क्लास बनाएं जो `Error` को `extends` करे।
+2. एक फ़ंक्शन `fetchReport(url, timeoutMs)` बनाएं। अगर `timeoutMs < 1000` हो, तो `ApiTimeoutError` थ्रो करें।
+3. इसे `try...catch` ब्लॉक में चलाकर टेस्ट करें।
+
+**हल (Solution Hint):**
+```javascript
+class ApiTimeoutError extends Error {
+  constructor(url, timeoutMs) {
+    super(`⏱️ API कॉल टाइमआउट हुआ '${url}' (${timeoutMs}ms सीमा पार हुई)।`);
+    this.name = "ApiTimeoutError";
+  }
+}
+
+function fetchReport(url, timeoutMs) {
+  if (timeoutMs < 1000) {
+    throw new ApiTimeoutError(url, timeoutMs);
+  }
+  return { status: 200, data: "रिपोर्ट डेटा" };
+}
+
 try {
-  Promise.reject("oops"); // Unhandled rejection!
-} catch (e) {
-  console.log("Won't catch"); // Yeh execute NAHI hoga
-}
-
-// ✅ async/await + try/catch
-async function safeFetch(url) {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new APIError(`HTTP ${response.status}`, response.status);
-    }
-    return await response.json();
-  } catch (error) {
-    if (error instanceof APIError) throw error;
-    throw new APIError("Network error: " + error.message);
-  }
-}
-
-// Global unhandled rejection handler (Node.js)
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("Unhandled Rejection:", reason);
-  process.exit(1);
-});
-
-process.on("uncaughtException", (error) => {
-  console.error("Uncaught Exception:", error);
-  process.exit(1);
-});
-```
-
----
-
-# Part C: Node.js Basics 📦
-
-## CommonJS vs ES Modules
-
-```javascript
-// ===== CommonJS (older, default in Node.js) =====
-// math.js
-const add = (a, b) => a + b;
-const subtract = (a, b) => a - b;
-module.exports = { add, subtract };
-// OR: exports.add = add;
-
-// app.js
-const { add, subtract } = require("./math");
-console.log(add(1, 2)); // 3
-
-// ===== ES Modules (modern, use this ✅) =====
-// math.mjs (ya package.json mein "type": "module")
-export const add = (a, b) => a + b;
-export const subtract = (a, b) => a - b;
-export default function multiply(a, b) { return a * b; }
-
-// app.mjs
-import multiply, { add, subtract } from "./math.mjs";
-console.log(add(1, 2)); // 3
-```
-
-## File System (fs module)
-
-```javascript
-const fs = require("fs");
-const path = require("path");
-
-// ❌ Synchronous (blocks!)
-const data = fs.readFileSync("file.txt", "utf-8");
-
-// ✅ Async with promises (PREFER)
-const fsPromises = require("fs").promises;
-
-async function fileOperations() {
-  // Read file
-  const content = await fsPromises.readFile("input.txt", "utf-8");
-  
-  // Write file
-  await fsPromises.writeFile("output.txt", "Hello World");
-  
-  // Append to file
-  await fsPromises.appendFile("log.txt", "New log entry\n");
-  
-  // Check if file exists
-  try {
-    await fsPromises.access("file.txt");
-    console.log("File exists");
-  } catch {
-    console.log("File doesn't exist");
-  }
-  
-  // Read directory
-  const files = await fsPromises.readdir("./src");
-  
-  // Create directory
-  await fsPromises.mkdir("./output", { recursive: true });
-  
-  // Delete file
-  await fsPromises.unlink("temp.txt");
-  
-  // File info
-  const stats = await fsPromises.stat("file.txt");
-  console.log("Size:", stats.size, "bytes");
-  console.log("Is file:", stats.isFile());
-  console.log("Modified:", stats.mtime);
-}
-
-// path module — cross-platform paths
-const filePath = path.join(__dirname, "data", "config.json");
-path.basename("/path/to/file.txt");  // "file.txt"
-path.extname("file.txt");            // ".txt"
-path.dirname("/path/to/file.txt");   // "/path/to"
-path.resolve("./data", "config.json"); // Absolute path
-```
-
-## process & Environment Variables
-
-```javascript
-// Command line arguments
-console.log(process.argv); // [node_path, script_path, ...args]
-const args = process.argv.slice(2); // User arguments only
-
-// Environment variables
-console.log(process.env.NODE_ENV);     // "development" / "production"
-console.log(process.env.HOME);         // User home directory
-const PORT = process.env.PORT || 3000;
-
-// Exit
-process.exit(0); // Success
-process.exit(1); // Error
-
-// Current directory
-console.log(process.cwd()); // Working directory
-```
-
-## npm & package.json
-
-```json
-{
-  "name": "my-project",
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "start": "node src/index.js",
-    "dev": "node --watch src/index.js",
-    "test": "node --test",
-    "lint": "eslint src/",
-    "format": "prettier --write ."
-  },
-  "dependencies": {
-    "express": "^4.18.0"
-  },
-  "devDependencies": {
-    "eslint": "^8.0.0",
-    "prettier": "^3.0.0"
-  }
+  fetchReport("https://api.example.com/reports", 500);
+} catch (err) {
+  console.log(`पकड़ा गया एरर: [${err.name}] ${err.message}`);
 }
 ```
-
-```bash
-# npm commands
-npm init -y                  # Initialize project
-npm install express          # Install dependency (--save by default)
-npm install -D eslint        # Install dev dependency
-npm install                  # Install all from package.json
-npm run test                 # Run script
-npm outdated                 # Check for updates
-npm update                   # Update packages
-```
-
----
-
-## 🧠 Key Takeaways
-
-| Topic | Remember |
-|-------|----------|
-| Event Loop | Microtasks (Promises) > Macrotasks (setTimeout) |
-| Custom Errors | Extend Error class, add name/code/statusCode |
-| Async errors | ALWAYS use try/catch with await |
-| fs module | Use `fs.promises` (async), not sync versions |
-| path module | Use `path.join()` for cross-platform paths |
-| ES Modules | Add `"type": "module"` in package.json |

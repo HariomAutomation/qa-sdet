@@ -1,305 +1,113 @@
-# 📘 Module 1.3 — Git & Version Control Complete Guide
+# 📘 Module 1.3 — Git & Version Control
 
-> **Time:** ~6-8 hours  
-> **Goal:** Git confident use karna — daily workflow + advanced commands
+## Complete Guide: Git & GitHub from Zero to Hero
+
+> **लक्ष्य (Goal):** अगर आप Git से पूरी तरह नए हैं, तो भी आप कोड का वर्ज़न कंट्रोल करना, ब्रांचेस बनाना, मर्च कॉन्फ्लिक्ट्स सुलझाना और टीम के साथ GitHub पर काम करना आसानी से सीख सकें।  
+> **भाषा शैली (Tone):** सरल, आदरपूर्ण और उदाहरणों से भरपूर (Hinglish).
 
 ---
 
-## 1️⃣ Git Fundamentals
+## 🌟 1. Git क्या है और हमें इसकी आवश्यकता क्यों है?
 
-### Setup
-```bash
-git config --global user.name "Hariom"
-git config --global user.email "hariom@example.com"
-git config --global init.defaultBranch main
-git config --global core.editor "code --wait"
+### 💡 Real-Life Analogy (वीडियो गेम का चेकपॉइंट)
+सोचिए जब आप कोई कठिन वीडियो गेम खेलते हैं और किसी बड़े Boss से लड़ने से पहले गेम को **Save (Checkpoint)** कर लेते हैं। अगर गेम में आपकी हार हो जाती है, तो आप उसी सेवड चेकपॉइंट से दोबारा शुरू कर सकते हैं।
 
-# Check config
-git config --list
+**Git आपके कोड की टाइम मशीन (Time Machine) है:**
+- जब भी आप नया कोड लिखते हैं, तो आप उसका एक सुरक्षित स्नैपशॉट (**Commit**) ले लेते हैं।
+- अगर भविष्य में कोई बग आ जाए, तो आप 1 सेकंड में पुराने वर्किंग कोड पर वापस जा सकते हैं।
+
+---
+
+## 2️⃣ Git के 3 मुख्य चरण (The 3 States of Git)
+
 ```
-
-### Basic Workflow
-```bash
-# Initialize
-git init                      # Naya repo banao
-git clone <url>               # Existing repo clone karo
-
-# Stage → Commit cycle
-git status                    # Changes dekho
-git add <file>                # Specific file stage
-git add .                     # Sab stage karo
-git add -p                    # Interactive staging (chunks select karo)
-
-git commit -m "feat: add login test"   # Commit
-git commit -am "fix: typo"            # Stage + commit (tracked files)
-git commit --amend                     # Last commit modify karo
-
-# View history
-git log                       # Full history
-git log --oneline             # Compact view
-git log --oneline --graph     # Branch graph
-git log -n 5                  # Last 5 commits
-git log --author="Hariom"     # Filter by author
-git log -- path/to/file       # File ki history
-
-# Differences
-git diff                      # Unstaged changes
-git diff --staged             # Staged changes
-git diff main..feature        # Branch comparison
-git diff HEAD~3               # Last 3 commits se comparison
-
-# Stash — temporarily changes save karo
-git stash                     # Save current changes
-git stash save "WIP: login"   # Named stash
-git stash list                # Sab stashes dekho
-git stash pop                 # Apply + delete latest stash
-git stash apply stash@{1}     # Specific stash apply karo (delete nahi)
-git stash drop stash@{0}      # Delete a stash
-```
-
-### Commit Message Convention (Conventional Commits)
-```
-<type>[optional scope]: <description>
-
-Types:
-  feat:     New feature
-  fix:      Bug fix
-  docs:     Documentation changes
-  style:    Formatting (no code change)
-  refactor: Code restructuring (no feature/fix)
-  test:     Adding/fixing tests
-  chore:    Build process, dependencies
-  ci:       CI/CD changes
-  perf:     Performance improvements
-
-Examples:
-  feat: add user registration API
-  fix(auth): resolve token expiry issue
-  test: add unit tests for Calculator class
-  docs: update README with setup instructions
-  refactor(api): extract validation middleware
+┌─────────────────┐       git add       ┌─────────────────┐      git commit     ┌─────────────────┐
+│  Working Tree   │ ──────────────────► │  Staging Area   │ ──────────────────► │   Repository    │
+│ (जहाँ आप कोड    │                     │ (तैयार पार्सल   │                     │ (स्थायी तिजोरी  │
+│  लिख रहे हैं)   │                     │  की तरह)        │                     │  - Committed)   │
+└─────────────────┘                     └─────────────────┘                     └─────────────────┘
 ```
 
 ---
 
-## 2️⃣ Branching Strategy
+## 3️⃣ आवश्यक बुनियादी कमांड्स (Daily Commands)
+
+### 1. पहली बार सेटअप (One-time Setup)
+```bash
+git config --global user.name "Aapka Naam"
+git config --global user.email "aapka.email@example.com"
+```
+
+### 2. नया प्रोजेक्ट शुरू करना या क्लोन करना
+```bash
+# अपने खाली फ़ोल्डर को Git रिपॉजिटरी बनाएं:
+git init
+
+# या GitHub से बना-बनाया प्रोजेक्ट डाउनलोड करें:
+git clone https://github.com/HariomAutomation/qa-sdet.git
+```
+
+### 3. स्टेटस देखना, स्टेज करना और कमिट करना
+```bash
+# 1. कौन-सी फाइल्स बदली हैं, यह चेक करें:
+git status
+
+# 2. फाइल्स को स्टेजिंग एरिया में जोड़ें:
+git add .
+
+# 3. एक साफ़ और स्पष्ट मैसेज के साथ सेव करें:
+git commit -m "feat: login page automation test suite add kiya"
+```
+
+---
+
+## 4️⃣ Branches (शाखाएँ) — बिना मुख्य कोड छेड़े नया काम करना
+
+### 💡 Analogy
+जैसे पेड़ के तने (Main Trunk) को नुकसान पहुंचाए बिना नई टहनी पर पत्तियां उगती हैं, वैसे ही Git में हम `main` ब्रांच को सुरक्षित रखते हुए अपनी अलग `feature` ब्रांच बनाकर काम करते हैं:
 
 ```bash
-# Create & switch
-git branch feature/login-test    # Branch banao
-git checkout feature/login-test  # Switch karo
-git checkout -b feature/signup   # Create + switch (shortcut)
-git switch feature/login-test    # Modern switch command
-git switch -c feature/new        # Modern create + switch
+# 1. नई ब्रांच बनाएं और उस पर स्विच करें:
+git checkout -b feature/checkout-tests
 
-# List branches
-git branch           # Local branches
-git branch -r        # Remote branches
-git branch -a        # All branches
-git branch -v        # With last commit
+# 2. अपने बदलाव कमिट करें:
+git add .
+git commit -m "feat: checkout payment validation tests"
 
-# Delete branch
-git branch -d feature/done       # Safe delete (merged check)
-git branch -D feature/abandoned  # Force delete
-
-# Merge
+# 3. वापस main ब्रांच पर आएं:
 git checkout main
-git merge feature/login-test     # Merge feature into main
-git merge --no-ff feature/test   # Always create merge commit
-```
 
-### Branch Naming Convention
-```
-feature/TICKET-123-add-login-test
-bugfix/TICKET-456-fix-flaky-test
-hotfix/critical-auth-failure
-release/v2.1.0
-test/experiment-parallel-execution
+# 4. अपने नए फीचर को main में मिला लें:
+git merge feature/checkout-tests
 ```
 
 ---
 
-## 3️⃣ Advanced Git
+## 5️⃣ Merge Conflicts (टकराव) को कैसे सुलझाएं?
 
-### Rebase (Clean History)
-```bash
-# Rebase — apni branch ko main ke TOP par rakho
-git checkout feature/login
-git rebase main
-# Merge commit nahi banta — linear history ✅
+जब दो डेवलपर्स/SDETs एक ही फाइल की एक ही लाइन पर अलग-अलग कोड लिख देते हैं, तो Git कन्फ्यूज़ हो जाता है।
 
-# Interactive rebase — commits squash/edit karo
-git rebase -i HEAD~3
-# Editor mein:
-# pick abc123 feat: add login page
-# squash def456 fix: typo in login
-# squash ghi789 style: format login code
-# Result: 3 commits → 1 clean commit
-
-# ⚠️ RULE: PUBLIC branches (main, develop) par rebase KABHI mat karo!
-# Sirf apni local/feature branches par karo
+```
+<<<<<<< HEAD (आपका करंट कोड)
+const baseUrl = "https://staging.qa.com";
+=======
+const baseUrl = "https://prod.qa.com";
+>>>>>>> feature-branch (आने वाला कोड)
 ```
 
-### Cherry-Pick
-```bash
-# Specific commit ko current branch mein lao
-git cherry-pick <commit-hash>
-git cherry-pick abc123 def456    # Multiple commits
-git cherry-pick abc123 --no-commit  # Stage karo, commit mat karo
-```
-
-### Reset (Undo Changes)
-```bash
-# Soft — commits undo, changes staged
-git reset --soft HEAD~1
-
-# Mixed (default) — commits undo, changes unstaged
-git reset HEAD~1
-
-# Hard — commits undo, changes DELETE ⚠️
-git reset --hard HEAD~1
-
-# Specific file unstage
-git reset HEAD file.js
-```
-
-### Reflog (Time Machine)
-```bash
-# Git ki har action ki history
-git reflog
-# abc1234 HEAD@{0}: commit: feat: add test
-# def5678 HEAD@{1}: checkout: moving from main to feature
-# ...
-
-# Accidentally deleted branch/commit recover karo
-git checkout -b recovery HEAD@{5}
-```
-
-### Bisect (Bug Hunter)
-```bash
-# Binary search se bug-introducing commit dhundho
-git bisect start
-git bisect bad                 # Current commit bad hai
-git bisect good abc123         # Yeh commit good tha
-# Git automatically middle commit checkout karega
-# Test karo → mark good or bad
-git bisect good                # Ya: git bisect bad
-# ... repeat until found
-git bisect reset               # Finish
-```
+**सुलझाने का तरीका:**  
+1. VS Code में फाइल खोलें।
+2. तय करें कि कौन-सी लाइन रखनी है (Accept Current / Accept Incoming / Combine Both)।
+3. मार्कर्स `<<<<<<<` और `>>>>>>>` हटाकर फाइल सेव करें।
+4. `git add .` और `git commit -m "fix: merge conflict resolved"` चलाएं।
 
 ---
 
-## 4️⃣ Collaboration
+## ✍️ Immediate Practice Challenge (स्वयं करके देखें)
 
-### Pull Requests Workflow
-```bash
-# 1. Main se branch banao
-git checkout main && git pull
-git checkout -b feature/add-login-test
-
-# 2. Code likho, commit karo
-git add . && git commit -m "feat: add login test"
-
-# 3. Push karo
-git push -u origin feature/add-login-test
-
-# 4. GitHub/GitLab par Pull Request banao
-# 5. Review, approve, merge
-
-# 6. Cleanup
-git checkout main && git pull
-git branch -d feature/add-login-test
-```
-
-### Merge Conflict Resolution
-```bash
-# Conflict aaye toh:
-git merge feature/branch
-# CONFLICT in file.js
-
-# 1. File open karo — conflict markers dikhenge:
-# <<<<<<< HEAD (current)
-# your code
-# =======
-# their code
-# >>>>>>> feature/branch (incoming)
-
-# 2. Manually resolve (markers hatao, sahi code rakho)
-# 3. Stage resolved files
-git add file.js
-# 4. Commit
-git commit -m "fix: resolve merge conflict in file.js"
-```
-
----
-
-## 5️⃣ Git Hooks (Automation)
-
-```bash
-# Install husky
-npm install -D husky lint-staged
-npx husky init
-
-# Pre-commit hook — commit se pehle lint + format
-# .husky/pre-commit
-npx lint-staged
-
-# Commit-msg hook — commit message validate
-# .husky/commit-msg
-npx commitlint --edit $1
-
-# package.json mein:
-# "lint-staged": {
-#   "*.{js,ts}": ["eslint --fix", "prettier --write"],
-#   "*.{json,md}": ["prettier --write"]
-# }
-```
-
-### .gitignore Best Practices
-```gitignore
-# Dependencies
-node_modules/
-
-# Build output
-dist/
-build/
-
-# IDE
-.vscode/settings.json
-.idea/
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Test
-test-results/
-playwright-report/
-coverage/
-allure-results/
-
-# Logs
-*.log
-npm-debug.log*
-```
-
----
-
-## 📋 Git Cheatsheet
-
-| Command | Use |
-|---------|-----|
-| `git stash` | Temporarily save changes |
-| `git rebase -i HEAD~3` | Squash last 3 commits |
-| `git cherry-pick <hash>` | Copy specific commit |
-| `git reset --soft HEAD~1` | Undo commit, keep changes staged |
-| `git reflog` | View ALL git actions history |
-| `git bisect` | Find bug-introducing commit |
-| `git log --oneline --graph` | Visual branch history |
-| `git diff --staged` | See what's being committed |
+### 🎯 Practice Challenge:
+1. अपने टर्मिनल में एक नया फ़ोल्डर बनाएं: `mkdir git-test && cd git-test`।
+2. `git init` चलाकर रिपॉजिटरी बनाएं।
+3. एक फाइल बनाएं: `echo "console.log('Hello SDET');" > app.js`।
+4. `git status`, `git add app.js`, और `git commit -m "init: first commit"` चलाएं।
+5. `git log --oneline` चलाकर अपना पहला चेकपॉइंट देखें।

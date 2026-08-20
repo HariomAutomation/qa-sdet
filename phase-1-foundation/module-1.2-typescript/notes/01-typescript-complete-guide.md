@@ -1,364 +1,156 @@
-# 📘 Module 1.2 — TypeScript Mastery
+# 📘 Module 1.2 — TypeScript Mastery for SDETs
 
-## Part 1: Basics to Intermediate (Types, Interfaces, Generics)
+## Complete Guide: TypeScript from Zero to Hero
 
-> **Time:** ~6-8 hours total  
-> **Goal:** TypeScript confident use karna — SDET frameworks mein TS mandatory hai
+> **लक्ष्य (Goal):** अगर आप केवल बेसिक जावास्क्रिप्ट जानते हैं, तो भी आप TypeScript के टाइप सिस्टम, इंटरफेस, जेनेरिक्स और डेकोरेटर्स को आसानी से समझकर एंटरप्राइज-लेवल टेस्ट ऑटोमेशन फ्रेमवर्क बना सकें।  
+> **भाषा शैली (Tone):** सरल, आदरपूर्ण और उदाहरणों से भरपूर (Hinglish).
 
 ---
 
-## 1️⃣ Basic Types
+## 🌟 1. TypeScript क्या है और हमें इसकी आवश्यकता क्यों है?
+
+### 💡 Real-Life Analogy
+- **JavaScript:** बिना हेलमेट और गार्ड के बाइक चलाना — आप बहुत तेज़ चल सकते हैं, लेकिन छोटी सी टक्कर (Undefined variable) पर पूरी बाइक क्रैश हो जाती है।
+- **TypeScript:** हेलमेट, जैकेट और GPS नेविगेशन के साथ बाइक चलाना — कोड रन होने से पहले ही कंपाइलर आपको बता देता है कि आगे कहाँ गड्ढा (Bug) है!
+
+जब हम बड़े टेस्ट ऑटोमेशन प्रोजेक्ट्स (Playwright, API Frameworks) बनाते हैं, तो TypeScript हमें:
+1. **ऑटो-कम्प्लीशन (IntelliSense):** कोड लिखते समय मेथड और प्रॉपर्टी के नाम अपने आप सजेस्ट होते हैं।
+2. **कंपाइल-टाइम सुरक्षा:** ग़लत डेटा पास करने पर कोड चलने से पहले ही एरर पकड़ में आ जाता है।
+
+---
+
+## 2️⃣ Basic Types — मूल प्रकार
 
 ```typescript
-// Primitive types
-let name: string = "Hariom";
-let age: number = 25;
-let isActive: boolean = true;
-let nothing: null = null;
-let notDefined: undefined = undefined;
+// 1. Primitives (मूल प्रकार)
+const studentName: string = "Hariom";
+const testCaseCount: number = 45;
+const isSuitePassed: boolean = true;
 
-// Arrays
-let scores: number[] = [90, 85, 95];
-let names: Array<string> = ["Hariom", "Rahul"]; // Generic syntax
+// 2. Arrays (सूचियां)
+const supportedBrowsers: string[] = ["chromium", "firefox", "webkit"];
+const responseTimes: number[] = [120, 350, 410];
 
-// Tuple — fixed length, fixed types
-let pair: [string, number] = ["Hariom", 25];
-let rgb: [number, number, number] = [255, 128, 0];
-
-// Enum
-enum Direction { Up, Down, Left, Right } // 0, 1, 2, 3
-enum Status { Active = "ACTIVE", Inactive = "INACTIVE" }
-let dir: Direction = Direction.Up;
-
-// const enum — compile time inline (better performance)
-const enum HttpStatus { OK = 200, NotFound = 404, ServerError = 500 }
-
-// any vs unknown vs never
-let anything: any = "hello";    // ❌ AVOID — type safety khatam
-anything.foo.bar;               // No error — DANGEROUS!
-
-let safe: unknown = "hello";    // ✅ PREFER over any
-// safe.foo;                    // ❌ Error — pehle type check karo
-if (typeof safe === "string") {
-  console.log(safe.toUpperCase()); // ✅ Ab safe hai
+// 3. Enums (फिक्स्ड ऑप्शन्स का नामकरण)
+enum TestPriority {
+  P0 = "BLOCKER",
+  P1 = "CRITICAL",
+  P2 = "MAJOR",
+  P3 = "MINOR",
 }
 
-// never — function jo kabhi return nahi karta
-function throwError(msg: string): never {
-  throw new Error(msg);
-}
-function infiniteLoop(): never {
-  while (true) {}
-}
-
-// void — function jo kuch return nahi karta (but terminate hota hai)
-function logMessage(msg: string): void {
-  console.log(msg);
-}
-
-// Type assertions (casting)
-let someValue: unknown = "hello world";
-let strLength: number = (someValue as string).length; // Preferred
-let strLength2: number = (<string>someValue).length;  // JSX mein nahi chalega
+const currentBugPriority: TestPriority = TestPriority.P0;
+console.log("बग प्राथमिकता:", currentBugPriority); // BLOCKER
 ```
 
-## 2️⃣ Interfaces & Type Aliases
+---
+
+## 3️⃣ Interfaces बनाम Type Aliases — डेटा का सांचा (Blueprint)
+
+### 💡 Analogy
+जैसे आधार कार्ड का एक फिक्स्ड फॉर्मैट होता है (नाम, उम्र, पता अनिवार्य है), वैसे ही **Interface** यह तय करता है कि किसी ऑब्जेक्ट में कौन-कौन सी प्रॉपर्टीज होनी चाहिए:
 
 ```typescript
-// Interface — object ka shape define karo
-interface User {
-  id: number;
+// यूज़र डेटा का सांचा (Contract)
+interface UserProfile {
+  id: string;
   name: string;
   email: string;
-  age?: number;          // Optional property (? lagao)
-  readonly createdAt: Date; // Read-only — modify nahi ho sakta
+  role: "ADMIN" | "STANDARD" | "GUEST"; // Union Type
+  phoneNumber?: string; // Optional Property (? का मतलब अनिवार्य नहीं)
 }
 
-const user: User = {
-  id: 1,
+const testUser: UserProfile = {
+  id: "USR-001",
   name: "Hariom",
-  email: "h@test.com",
-  createdAt: new Date(),
+  email: "hariom@automation.com",
+  role: "ADMIN",
+  // phoneNumber छोड़ दिया, क्योंकि वह optional है
 };
-// user.createdAt = new Date(); // ❌ Error — readonly
-
-// Interface extending
-interface Employee extends User {
-  department: string;
-  salary: number;
-}
-
-// Multiple interface extend
-interface Manager extends Employee {
-  team: Employee[];
-  level: "junior" | "senior" | "director";
-}
-
-// Type Alias — kisi bhi type ka naam do
-type ID = string | number;
-type Point = { x: number; y: number };
-type Callback = (data: string) => void;
-
-// Type vs Interface — KEY DIFFERENCES
-// Interface: extend ho sakta hai, declaration merging
-// Type: unions, intersections, mapped types, primitives
-
-// Interface declaration merging (auto-merge)
-interface Config { host: string; }
-interface Config { port: number; } // Merge ho jaayega!
-// Config = { host: string; port: number } ✅
-
-// Type unions (interface mein nahi ho sakta)
-type Status = "active" | "inactive" | "pending"; // Union of literals
-type Result = string | number; // Union of types
-type StringOrArray = string | string[];
-```
-
-## 3️⃣ Union & Intersection Types
-
-```typescript
-// Union — ya toh yeh ya woh
-type ID = string | number;
-
-function printId(id: ID) {
-  // Type narrowing chahiye
-  if (typeof id === "string") {
-    console.log(id.toUpperCase()); // String methods ✅
-  } else {
-    console.log(id.toFixed(2)); // Number methods ✅
-  }
-}
-
-// Discriminated Union — BAHUT POWERFUL ⭐
-type Shape =
-  | { kind: "circle"; radius: number }
-  | { kind: "rectangle"; width: number; height: number }
-  | { kind: "triangle"; base: number; height: number };
-
-function area(shape: Shape): number {
-  switch (shape.kind) {
-    case "circle":
-      return Math.PI * shape.radius ** 2;
-    case "rectangle":
-      return shape.width * shape.height;
-    case "triangle":
-      return 0.5 * shape.base * shape.height;
-  }
-}
-
-// Intersection — dono types ka combination
-type HasName = { name: string };
-type HasAge = { age: number };
-type Person = HasName & HasAge; // { name: string; age: number }
-
-// Literal Types
-type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
-type StatusCode = 200 | 201 | 400 | 404 | 500;
-
-function request(method: HttpMethod, url: string): void {
-  console.log(`${method} ${url}`);
-}
-request("GET", "/api/users"); // ✅
-// request("PATCH", "/api");  // ❌ Error
-```
-
-## 4️⃣ Generics — MOST IMPORTANT FOR FRAMEWORKS ⭐⭐⭐
-
-```typescript
-// Generic function — type ko parameter ki tarah use karo
-function identity<T>(value: T): T {
-  return value;
-}
-identity<string>("hello"); // T = string
-identity(42);              // T = number (auto-inferred)
-
-// Generic with constraints
-function getLength<T extends { length: number }>(item: T): number {
-  return item.length;
-}
-getLength("hello");      // ✅ string has length
-getLength([1, 2, 3]);    // ✅ array has length
-// getLength(123);        // ❌ number has no length
-
-// Generic interface
-interface ApiResponse<T> {
-  status: number;
-  data: T;
-  message: string;
-  timestamp: Date;
-}
-
-// Usage with different types
-type UserResponse = ApiResponse<User>;
-type UsersResponse = ApiResponse<User[]>;
-type CountResponse = ApiResponse<{ count: number }>;
-
-// Generic class
-class Repository<T extends { id: number }> {
-  private items: T[] = [];
-
-  add(item: T): void { this.items.push(item); }
-  findById(id: number): T | undefined { return this.items.find(i => i.id === id); }
-  getAll(): T[] { return [...this.items]; }
-  remove(id: number): boolean {
-    const index = this.items.findIndex(i => i.id === id);
-    if (index === -1) return false;
-    this.items.splice(index, 1);
-    return true;
-  }
-}
-
-const userRepo = new Repository<User>();
-userRepo.add({ id: 1, name: "Hariom", email: "h@test.com", createdAt: new Date() });
-
-// Multiple generic params
-function merge<T, U>(obj1: T, obj2: U): T & U {
-  return { ...obj1, ...obj2 };
-}
-
-// Generic with default
-interface PaginatedResponse<T, M = { page: number; total: number }> {
-  data: T[];
-  meta: M;
-}
-```
-
-## 5️⃣ Utility Types — BUILT-IN HELPERS
-
-```typescript
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  role: "admin" | "user";
-}
-
-// Partial<T> — sab properties optional
-type UpdateUser = Partial<User>;
-// { id?: number; name?: string; email?: string; ... }
-
-// Required<T> — sab properties required
-type StrictUser = Required<User>;
-
-// Pick<T, K> — specific properties choose karo
-type UserPreview = Pick<User, "id" | "name">;
-// { id: number; name: string }
-
-// Omit<T, K> — specific properties hatao
-type UserWithoutPassword = Omit<User, "password">;
-// { id: number; name: string; email: string; role: ... }
-
-// Record<K, V> — key-value mapping
-type UserRoles = Record<string, User[]>;
-// { [key: string]: User[] }
-const roleMap: Record<"admin" | "user", number> = { admin: 5, user: 100 };
-
-// Readonly<T> — sab properties readonly
-type FrozenUser = Readonly<User>;
-
-// ReturnType<T> — function ka return type
-function createUser() { return { id: 1, name: "Hariom" }; }
-type NewUser = ReturnType<typeof createUser>; // { id: number; name: string }
-
-// Parameters<T> — function ke parameters ka type
-type CreateUserParams = Parameters<typeof createUser>; // []
-
-// Extract & Exclude
-type T1 = Extract<"a" | "b" | "c", "a" | "f">; // "a"
-type T2 = Exclude<"a" | "b" | "c", "a">;        // "b" | "c"
-
-// NonNullable
-type T3 = NonNullable<string | null | undefined>; // string
-```
-
-## 6️⃣ Type Narrowing & Guards
-
-```typescript
-// typeof guard
-function process(value: string | number) {
-  if (typeof value === "string") return value.toUpperCase();
-  return value.toFixed(2);
-}
-
-// instanceof guard
-class Dog { bark() { return "Woof!"; } }
-class Cat { meow() { return "Meow!"; } }
-
-function speak(animal: Dog | Cat): string {
-  if (animal instanceof Dog) return animal.bark();
-  return animal.meow();
-}
-
-// "in" operator guard
-interface Fish { swim: () => void; }
-interface Bird { fly: () => void; }
-
-function move(animal: Fish | Bird) {
-  if ("swim" in animal) animal.swim();
-  else animal.fly();
-}
-
-// Custom type guard (is keyword) ⭐
-interface ApiError { code: number; message: string; }
-interface ApiSuccess<T> { data: T; }
-type ApiResult<T> = ApiError | ApiSuccess<T>;
-
-function isError(result: ApiResult<unknown>): result is ApiError {
-  return "code" in result;
-}
-
-function handleResult(result: ApiResult<User>) {
-  if (isError(result)) {
-    console.error(`Error ${result.code}: ${result.message}`);
-  } else {
-    console.log(`User: ${result.data.name}`); // TS knows it's ApiSuccess
-  }
-}
-```
-
-## 7️⃣ tsconfig.json — Production Setup
-
-```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "lib": ["ES2022"],
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "strictNullChecks": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "paths": {
-      "@/*": ["./src/*"],
-      "@utils/*": ["./src/utils/*"]
-    }
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
-}
 ```
 
 ---
 
-## 🧠 Key Takeaways
+## 4️⃣ Generics (`<T>`) — लचीला और सुरक्षित कोड
 
-| Concept | Remember |
-|---------|----------|
-| `any` vs `unknown` | `unknown` use karo — safe hai |
-| `interface` vs `type` | Interface for objects, Type for unions/intersections |
-| Generics | `<T>` — flexible, reusable types |
-| Utility Types | `Partial`, `Pick`, `Omit`, `Record` — daily use |
-| Type guards | `typeof`, `instanceof`, `in`, custom `is` |
-| `strict: true` | HAMESHA enable rakho tsconfig mein |
+### 💡 Real-Life Analogy
+सोचिए एक **पारदर्शी डिब्बा (Container)**:
+आप उस डिब्बे पर लिख सकते हैं कि इसमें केवल 'सेब' रखे जाएंगे, या 'किताबें' रखी जाएंगी।
+
+**Generic `<T>`** एक टाइप का वेरिएबल है जो यह तय करता है कि फ़ंक्शन जिस प्रकार का डेटा लेगा, उसी प्रकार का डेटा लौटाएगा:
+
+```typescript
+// Generic API Response Wrapper
+interface ApiResponse<T> {
+  statusCode: number;
+  message: string;
+  data: T; // T कोई भी डेटा टाइप हो सकता है!
+}
+
+// 1. जब Response में User का डेटा हो:
+const userResponse: ApiResponse<UserProfile> = {
+  statusCode: 200,
+  message: "Success",
+  data: testUser,
+};
+
+// 2. जब Response में Numbers की लिस्ट हो:
+const metricsResponse: ApiResponse<number[]> = {
+  statusCode: 200,
+  message: "Metrics calculated",
+  data: [120, 240, 180],
+};
+```
+
+---
+
+## 5️⃣ Utility Types — टाइप को आसानी से बदलना
+
+TypeScript में बने-बनाए टूल्स होते हैं जो पुराने टाइप से नया टाइप बना देते हैं:
+
+1. **`Partial<T>`:** सभी प्रॉपर्टीज को Optional (`?`) बना देता है (डेटा अपडेट टेस्ट के लिए बेहतरीन)।
+2. **`Pick<T, Keys>`:** केवल चुनिंदा प्रॉपर्टीज को लेता है।
+3. **`Omit<T, Keys>`:** किसी प्रॉपर्टी को छोड़कर बाकी सब ले लेता है।
+
+```typescript
+// केवल email और role को चुनना:
+type UserCredentials = Pick<UserProfile, "email" | "role">;
+
+// id को छोड़कर बाकी सब लेना (जब नया यूज़र रजिस्टर कर रहे हों):
+type CreateUserPayload = Omit<UserProfile, "id">;
+```
+
+---
+
+## ✍️ Immediate Practice Challenge (स्वयं करके देखें)
+
+### 🎯 Practice Challenge:
+1. `TestCase` नाम से एक TypeScript Interface बनाएं जिसमें:
+   - `id`: `string`
+   - `title`: `string`
+   - `status`: `"PASSED" | "FAILED" | "SKIPPED"`
+   - `executionTimeMs`: `number`
+2. एक Generic फ़ंक्शन `filterByStatus<T>` बनाएं जो किसी भी एरे से स्टेटस के आधार पर आइटम्स फ़िल्टर करे।
+3. इसे 3 टेस्ट केसेस की लिस्ट पर रन करके देखें।
+
+**हल (Solution Hint):**
+```typescript
+interface TestCase {
+  id: string;
+  title: string;
+  status: "PASSED" | "FAILED" | "SKIPPED";
+  executionTimeMs: number;
+}
+
+function filterByStatus<T extends { status: string }>(items: T[], targetStatus: string): T[] {
+  return items.filter((item) => item.status === targetStatus);
+}
+
+const tests: TestCase[] = [
+  { id: "TC-1", title: "Login Flow", status: "PASSED", executionTimeMs: 150 },
+  { id: "TC-2", title: "Checkout Flow", status: "FAILED", executionTimeMs: 500 },
+];
+
+const failedOnes = filterByStatus(tests, "FAILED");
+console.log("फेल टेस्ट्स:", failedOnes);
+```

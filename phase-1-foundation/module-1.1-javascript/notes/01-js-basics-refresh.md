@@ -1,489 +1,200 @@
 # 📘 Module 1.1 — JavaScript Deep Dive
 
-## Lesson 1: JS Basics Refresh (Variables, Data Types, Operators, Conditionals, Loops)
+## Lesson 1: JavaScript Fundamentals — Zero to Hero Guide
 
-> **Difficulty:** 🟢 Beginner → Intermediate  
-> **Time:** ~2-3 hours  
-> **Goal:** Basics ka revision + wo nuances samajhna jo interviews mein puche jaate hain
+> **लक्ष्य (Goal):** अगर आपने पहले कभी प्रोग्रामिंग नहीं की है या सिर्फ बेसिक जानकारी है, तो भी आप JavaScript के सबसे बुनियादी कॉन्सेप्ट्स को गहराई से समझ सकें और आत्मविश्वास के साथ कोड लिख सकें।  
+> **भाषा शैली (Tone):** सरल, आदरपूर्ण और उदाहरणों से भरपूर (Hinglish).
 
 ---
 
-## 1️⃣ Variables — `var` vs `let` vs `const`
+## 🌟 1. JavaScript क्या है और हम इसे क्यों सीख रहे हैं?
 
-Tujhe pata hai variables kaise declare karte hain. Ab samajh **kyun** `let`/`const` use karte hain aur `var` kyun avoid karte hain.
+### 💡 Real-Life Analogy (दैनिक जीवन का उदाहरण)
+सोचिए जब आप एक नया घर बनाते हैं:
+1. **HTML:** घर की दीवारें, छत और ईंटें हैं (Structure).
+2. **CSS:** घर का पेंट, पर्दे और सजावट है (Design & Styling).
+3. **JavaScript:** घर की बिजली, पंखे का स्विच और ऑटोमैटिक दरवाज़ा है (Brain & Action).
 
-### `var` — The Old Way (AVOID ❌)
+जब हम **Software Testing & Automation (SDET)** करते हैं, तो हमें ब्राउज़र में बटन क्लिक करने, डेटा चेक करने, API से बात करने और टेस्ट रिजल्ट्स को प्रोसेस करने के लिए JavaScript के लॉजिक की ज़रूरत होती है।
+
+---
+
+## 2️⃣ Variables (वेरिएबल्स) — डेटा स्टोर करने वाले डिब्बे
+
+### 📦 Concept:
+वेरिएबल एक **लेबल लगा हुआ डिब्बा (Container)** है जिसमें आप कोई भी जानकारी (नाम, उम्र, टेस्ट रिजल्ट) सुरक्षित रख सकते हैं।
+
+JavaScript में वेरिएबल बनाने के 3 तरीके होते हैं: `const`, `let`, और `var`।
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                 Variables Comparison                        │
+├─────────┬───────────────────┬──────────────┬────────────────┤
+│ Keyword │ Scope (पहुँच)     │ Reassign?    │ कब यूज़ करें?  │
+├─────────┼───────────────────┼──────────────┼────────────────┤
+│ const   │ Block { }         │ ❌ नहीं      │ हमेशा प्राथमिकता│
+│ let     │ Block { }         │ ✅ हाँ       │ जब वैल्यू बदले │
+│ var     │ Function          │ ✅ हाँ       │ ❌ कभी नहीं    │
+└─────────┴───────────────────┴──────────────┴────────────────┘
+```
+
+---
+
+### 1. `const` (Constant — स्थिर मान)
+जब आपको पता हो कि इस डिब्बे की वैल्यू पूरे प्रोग्राम में कभी नहीं बदलेगी:
 
 ```javascript
-// Problem 1: var function-scoped hai, block-scoped NAHI
+// ✅ सही उपयोग: बेस URL या फिक्स्ड कॉन्फिगरेशन
+const baseUrl = "https://www.saucedemo.com";
+const maxRetries = 3;
+
+// ❌ अगर आप इसे बदलने की कोशिश करेंगे, तो Error आएगा:
+// baseUrl = "https://other.com"; // TypeError: Assignment to constant variable.
+```
+
+> **महत्वपूर्ण बात:** `const` का मतलब है कि वेरिएबल का नाम दोबारा किसी दूसरी चीज़ से नहीं जोड़ा जा सकता। लेकिन अगर वह डिब्बा एक Object या Array है, तो उसके अंदर का सामान बदल सकता है।
+
+---
+
+### 2. `let` (बदलने योग्य मान)
+जब आपको पहले से पता हो कि समय के साथ इसकी वैल्यू बदलेगी (जैसे लूप का काउंटर, टेस्ट का स्टेटस):
+
+```javascript
+let testStatus = "PENDING";
+console.log("शुरुआती स्टेटस:", testStatus); // PENDING
+
+// टेस्ट पास होने पर वैल्यू अपडेट करें:
+testStatus = "PASSED";
+console.log("अपडेटेड स्टेटस:", testStatus); // PASSED
+```
+
+---
+
+### 3. `var` (पुराना तरीका — इसे इस्तेमाल न करें)
+`var` पुराने JavaScript (ES5) का हिस्सा था। इसमें कई कमियाँ (Bugs) थीं जैसे कि यह ब्लॉक `{ }` की सीमाओं को नहीं मानता था और अनपेक्षित एरर पैदा करता था।
+
+```javascript
 if (true) {
-  var x = 10;
+  var userRole = "ADMIN";
 }
-console.log(x); // 10 ✅ — Yeh kaam karta hai! But yeh PROBLEM hai
-// x if block ke bahar bhi accessible hai — yeh unexpected behavior hai
-
-// Problem 2: var hoisting — declaration upar uth jaati hai, value nahi
-console.log(name); // undefined (error nahi aata! 😱)
-var name = "Hariom";
-
-// Problem 3: var re-declare ho sakta hai — bugs ka raasta
-var age = 25;
-var age = 30; // Koi error nahi! Silently overwrite ho gaya
+// block ke bahar bhi access ho gaya — yeh galat aur risky hai:
+console.log(userRole); // ADMIN
 ```
 
-### `let` — Block Scoped (USE ✅)
-
-```javascript
-// let block-scoped hai — sirf { } ke andar accessible
-if (true) {
-  let y = 20;
-  console.log(y); // 20 ✅
-}
-// console.log(y); // ❌ ReferenceError: y is not defined
-
-// let hoisting hota hai but "Temporal Dead Zone" mein rehta hai
-// console.log(score); // ❌ ReferenceError (TDZ mein hai)
-let score = 100;
-
-// let re-declare NAHI ho sakta same scope mein
-let city = "Delhi";
-// let city = "Mumbai"; // ❌ SyntaxError: Identifier 'city' has already been declared
-
-// But RE-ASSIGN ho sakta hai
-city = "Mumbai"; // ✅ Yeh chalega
-```
-
-### `const` — Block Scoped + Immutable Binding (PREFER 🌟)
-
-```javascript
-// const ki VALUE reassign nahi ho sakti
-const PI = 3.14159;
-// PI = 3.14; // ❌ TypeError: Assignment to constant variable
-
-// ⚠️ IMPORTANT: const ka matlab "value change nahi hogi" NAHI hai
-// const ka matlab hai "BINDING change nahi hogi" (reference same rahega)
-const user = { name: "Hariom", age: 25 };
-user.name = "Hari"; // ✅ Yeh chalega! Object ki property change ho sakti hai
-user.city = "Delhi"; // ✅ Nayi property add bhi ho sakti hai
-// user = { name: "Other" }; // ❌ Naya object assign nahi ho sakta
-
-const numbers = [1, 2, 3];
-numbers.push(4); // ✅ Array modify ho sakta hai
-// numbers = [5, 6]; // ❌ Naya array assign nahi ho sakta
-```
-
-### 🏆 Rule of Thumb
-```
-const > let > var (never)
-- Pehle const use karo
-- Agar value change karni hai toh let use karo
-- var KABHI mat use karo
-```
+### 🏆 Golden Rule (सुनहरा नियम)
+> **हमेशा पहले `const` का इस्तेमाल करें। अगर वैल्यू बदलनी पड़े, तभी `let` लगाएं। `var` का इस्तेमाल कभी न करें।**
 
 ---
 
-## 2️⃣ Data Types — Primitive vs Reference
+## 3️⃣ Data Types (डेटा के प्रकार)
 
-JavaScript mein **8 data types** hain. Yeh samajhna BAHUT important hai.
+JavaScript में डेटा मुख्य रूप से दो श्रेणियों में आता है:
 
-### Primitive Types (7) — Value by copy
+### A. Primitive Data Types (मूल डेटा प्रकार — कॉपी द्वारा पास होते हैं)
 
-```javascript
-// 1. string
-let greeting = "Hello";
-let name = 'Hariom';
-let template = `Hi ${name}`; // Template literal — backtick use karo
+1. **String (टेक्स्ट):** अक्षरों या शब्दों का समूह (कोटेशन मार्क्स में)।
+   ```javascript
+   const studentName = "Hariom";
+   const course = 'QA SDET Mastery';
+   const welcomeMessage = `नमस्ते, ${studentName}! आपका ${course} में स्वागत है।`; // Template Literal
+   ```
 
-// 2. number (integer + float dono ek hi type hai JS mein)
-let age = 25;
-let price = 99.99;
-let infinity = Infinity;
-let notANumber = NaN; // typeof NaN === "number" 😱 (interview question!)
+2. **Number (संख्या):** पूर्णांक (Integers) और दशमलव (Decimals) दोनों।
+   ```javascript
+   const testCasesCount = 50;
+   const passPercentage = 98.5;
+   ```
 
-// 3. boolean
-let isActive = true;
-let isDeleted = false;
+3. **Boolean (सत्य / असत्य):** सिर्फ दो वैल्यूज़ — `true` या `false`।
+   ```javascript
+   const isTestPassed = true;
+   const hasCriticalBug = false;
+   ```
 
-// 4. undefined — variable declare kiya but value nahi di
-let x;
-console.log(x); // undefined
-console.log(typeof x); // "undefined"
+4. **Undefined (अपरिभाषित):** जब वेरिएबल बना दिया गया हो लेकिन उसमें कोई वैल्यू न डाली गई हो।
+   ```javascript
+   let futureResult;
+   console.log(futureResult); // undefined
+   ```
 
-// 5. null — intentionally "koi value nahi" set kiya
-let user = null;
-console.log(typeof null); // "object" 😱 (JS ka famous bug — interview mein pucha jaata hai!)
-
-// 6. bigint — bahut bade numbers ke liye
-let bigNumber = 9007199254740991n; // 'n' lagana padta hai end mein
-let another = BigInt("123456789012345678901234567890");
-
-// 7. symbol — unique identifier banana
-let id1 = Symbol("id");
-let id2 = Symbol("id");
-console.log(id1 === id2); // false — har Symbol unique hota hai
-```
-
-### Reference Type (1) — Value by reference
-
-```javascript
-// object (arrays, functions, dates — sab objects hain internally)
-let obj1 = { name: "Hariom" };
-let obj2 = obj1; // Reference COPY hua, object nahi
-obj2.name = "Hari";
-console.log(obj1.name); // "Hari" 😱 — Dono same object point karte hain!
-
-// Same with arrays
-let arr1 = [1, 2, 3];
-let arr2 = arr1;
-arr2.push(4);
-console.log(arr1); // [1, 2, 3, 4] — arr1 bhi change ho gaya!
-```
-
-### typeof Operator — Type check karna
-
-```javascript
-console.log(typeof "hello");     // "string"
-console.log(typeof 42);          // "number"
-console.log(typeof true);        // "boolean"
-console.log(typeof undefined);   // "undefined"
-console.log(typeof null);        // "object" ⚠️ (bug!)
-console.log(typeof {});          // "object"
-console.log(typeof []);          // "object" ⚠️ (array bhi object hai)
-console.log(typeof function(){}); // "function"
-console.log(typeof Symbol());    // "symbol"
-console.log(typeof 10n);         // "bigint"
-
-// Array check karne ka sahi tarika
-console.log(Array.isArray([]));  // true ✅
-console.log(Array.isArray({}));  // false ✅
-
-// null check karne ka sahi tarika
-let value = null;
-console.log(value === null);     // true ✅
-```
+5. **Null (खाली मान):** जब जानबूझकर खाली वैल्यू सेट की जाए।
+   ```javascript
+   let activeSession = null; // अभी कोई सेशन सक्रिय नहीं है
+   ```
 
 ---
 
-## 3️⃣ Type Coercion — JS ki Sabse Tricky Cheez
+## 4️⃣ Operators — तुलना और लॉजिक
 
-JavaScript **implicit type conversion** karta hai jo bahut confusing ho sakta hai.
+### 1. `==` (Loose) बनाम `===` (Strict Equality)
 
-### Implicit Coercion (Automatic — DANGEROUS ⚠️)
-
-```javascript
-// String + Number = String (concatenation)
-console.log("5" + 3);      // "53" (number string ban gaya)
-console.log("5" + true);   // "5true"
-console.log("5" + null);   // "5null"
-
-// Other operators ke saath String → Number conversion hota hai
-console.log("5" - 3);      // 2 (string number ban gaya)
-console.log("5" * 2);      // 10
-console.log("5" / 2);      // 2.5
-console.log("hello" - 1);  // NaN
-
-// Boolean coercion
-console.log(true + 1);     // 2 (true = 1)
-console.log(false + 1);    // 1 (false = 0)
-
-// 🤯 Interview Trick Questions
-console.log([] + []);       // "" (empty string)
-console.log([] + {});       // "[object Object]"
-console.log({} + []);       // 0 ya "[object Object]" (context dependent)
-console.log(true + true);   // 2
-console.log(null + 1);      // 1 (null = 0)
-console.log(undefined + 1); // NaN
-```
-
-### Explicit Coercion (Manual — PREFER ✅)
+- `==` डेटा का प्रकार (Type) चेक नहीं करता, सिर्फ मान देखता है (Type Coercion करता है)।
+- `===` डेटा का मान और उसका प्रकार **दोनों** चेक करता है।
 
 ```javascript
-// String to Number
-let str = "42";
-let num1 = Number(str);        // 42
-let num2 = parseInt(str);      // 42 (integer)
-let num3 = parseFloat("3.14"); // 3.14
-let num4 = +"42";              // 42 (unary + operator — shorthand)
-
-// Number to String
-let n = 42;
-let s1 = String(n);    // "42"
-let s2 = n.toString();  // "42"
-let s3 = `${n}`;        // "42" (template literal)
-
-// To Boolean
-// Falsy values: false, 0, -0, "", null, undefined, NaN
-// Baaki SAB truthy hai (including "0", "false", [], {})
-console.log(Boolean(0));         // false
-console.log(Boolean(""));        // false
-console.log(Boolean(null));      // false
-console.log(Boolean(undefined)); // false
-console.log(Boolean(NaN));       // false
-
-console.log(Boolean("0"));      // true ⚠️ (non-empty string)
-console.log(Boolean("false"));  // true ⚠️
-console.log(Boolean([]));       // true ⚠️ (empty array bhi truthy!)
-console.log(Boolean({}));       // true ⚠️ (empty object bhi truthy!)
+console.log(5 == "5");  // true  ⚠️ (नंबर 5 और स्ट्रिंग "5" को बराबर मान लिया — जोखिम भरा)
+console.log(5 === "5"); // false ✅ (नंबर और स्ट्रिंग अलग प्रकार हैं — सुरक्षित!)
 ```
+
+> **सलाह:** ऑटोमेशन और कोडिंग में हमेशा `===` (Triple Equals) का ही उपयोग करें।
 
 ---
 
-## 4️⃣ Operators — `==` vs `===` (Critical!)
+## 5️⃣ Conditionals — निर्णय लेना (Decision Making)
 
-### Equality Operators
-
-```javascript
-// == (loose equality) — type coercion KARTA hai (AVOID ❌)
-console.log(5 == "5");       // true 😱
-console.log(0 == false);     // true
-console.log(null == undefined); // true
-console.log("" == false);   // true
-
-// === (strict equality) — type coercion NAHI karta (USE ✅)
-console.log(5 === "5");       // false ✅
-console.log(0 === false);     // false ✅
-console.log(null === undefined); // false ✅
-
-// 🏆 RULE: Hamesha === use karo. Kabhi == mat use karo.
-// Exception: null check — (value == null) checks both null AND undefined
-let val = null;
-console.log(val == null);       // true
-console.log(val == undefined);  // true (yeh useful hai)
-```
-
-### Logical Operators — Short Circuit Evaluation
+जब टेस्ट के रिजल्ट के आधार पर आपको अलग-अलग कदम उठाने हों:
 
 ```javascript
-// && (AND) — Pehla falsy value return karta hai, ya last value
-console.log("hello" && "world");  // "world" (dono truthy, last return)
-console.log(0 && "hello");       // 0 (pehla falsy return)
-console.log("" && "hello");     // "" (pehla falsy return)
+const responseStatusCode = 200;
 
-// || (OR) — Pehla truthy value return karta hai, ya last value
-console.log("" || "default");    // "default" (pehla truthy)
-console.log(null || "fallback"); // "fallback"
-console.log("hello" || "world"); // "hello" (pehla truthy)
-
-// ?? (Nullish Coalescing) — Sirf null/undefined ke liye fallback (ES2020)
-console.log(0 ?? "default");         // 0 ✅ (0 null/undefined nahi hai)
-console.log("" ?? "default");        // "" ✅ (empty string null nahi hai)
-console.log(null ?? "default");      // "default" ✅
-console.log(undefined ?? "default"); // "default" ✅
-
-// || vs ?? ka difference samjho
-let count = 0;
-console.log(count || 10);  // 10 😱 (0 falsy hai, toh 10 aa gaya)
-console.log(count ?? 10);  // 0 ✅ (0 null/undefined nahi hai, toh 0 hi rahega)
-```
-
-### Optional Chaining — `?.`
-
-```javascript
-// Bina optional chaining ke
-let user = { address: { city: "Delhi" } };
-// let zip = user.address.zipcode.code; // ❌ TypeError: Cannot read properties of undefined
-
-// Optional chaining ke saath
-let zip = user?.address?.zipcode?.code; // undefined ✅ (error nahi aata)
-
-// Methods ke saath
-let result = user.getName?.(); // undefined agar getName exist nahi karta
-
-// Arrays ke saath
-let arr = [1, 2, 3];
-let val = arr?.[5]; // undefined
-```
-
----
-
-## 5️⃣ Conditionals — Beyond Basic if/else
-
-### Ternary Operator
-
-```javascript
-// Basic ternary
-let age = 20;
-let status = age >= 18 ? "Adult" : "Minor";
-
-// Nested ternary (AVOID — readability kharab hoti hai)
-let grade = score >= 90 ? "A" : score >= 80 ? "B" : score >= 70 ? "C" : "F";
-// Better: if/else ya switch use karo nested cases mein
-```
-
-### Switch Statement
-
-```javascript
-// Switch strict equality (===) use karta hai
-let role = "admin";
-
-switch (role) {
-  case "admin":
-    console.log("Full access");
-    break; // break bhoolna mat! ⚠️
-  case "editor":
-    console.log("Edit access");
-    break;
-  case "viewer":
-    console.log("View only");
-    break;
-  default:
-    console.log("Unknown role");
-}
-
-// Fall-through pattern (intentional — no break)
-let day = "Monday";
-switch (day) {
-  case "Monday":
-  case "Tuesday":
-  case "Wednesday":
-  case "Thursday":
-  case "Friday":
-    console.log("Weekday");
-    break;
-  case "Saturday":
-  case "Sunday":
-    console.log("Weekend");
-    break;
+if (responseStatusCode === 200) {
+  console.log("✅ API Response सफल रहा!");
+} else if (responseStatusCode === 404) {
+  console.log("⚠️ Resource नहीं मिला (Not Found)!");
+} else {
+  console.log("❌ सर्वर एरर आया:", responseStatusCode);
 }
 ```
 
 ---
 
-## 6️⃣ Loops — Har Type Samjho
+## 6️⃣ Loops — बार-बार दोहराना (Iteration)
 
-### Traditional Loops
+जब आपको 100 टेस्ट केसेस या 50 प्रोडक्ट्स की लिस्ट पर एक-एक करके काम करना हो:
 
+### 1. `for...of` लूप (Arrays के लिए सबसे आसान और आधुनिक)
 ```javascript
-// for loop — jab iterations ka count pata ho
-for (let i = 0; i < 5; i++) {
-  console.log(i); // 0, 1, 2, 3, 4
+const browsers = ["Chromium", "Firefox", "WebKit"];
+
+for (const browser of browsers) {
+  console.log(`🚀 टेस्ट रन हो रहा है ब्राउज़र पर: ${browser}`);
 }
-
-// while — jab condition-based loop chahiye
-let count = 0;
-while (count < 5) {
-  console.log(count);
-  count++;
-}
-
-// do...while — kam se kam ek baar execute hoga
-let num = 10;
-do {
-  console.log(num); // 10 (ek baar chalega even though condition false hai)
-  num++;
-} while (num < 5);
-```
-
-### Modern Loops
-
-```javascript
-const fruits = ["apple", "banana", "cherry"];
-
-// for...of — Arrays aur Iterables ke liye (USE ✅)
-for (const fruit of fruits) {
-  console.log(fruit); // "apple", "banana", "cherry"
-}
-
-// for...in — Objects ke keys iterate karne ke liye
-const person = { name: "Hariom", age: 25, city: "Delhi" };
-for (const key in person) {
-  console.log(`${key}: ${person[key]}`);
-  // "name: Hariom", "age: 25", "city: Delhi"
-}
-
-// ⚠️ for...in arrays par MAT use karo — for...of use karo
-// for...in prototype chain ke properties bhi iterate karta hai
-```
-
-### Loop Control
-
-```javascript
-// break — loop se bahar nikalna
-for (let i = 0; i < 10; i++) {
-  if (i === 5) break;
-  console.log(i); // 0, 1, 2, 3, 4
-}
-
-// continue — current iteration skip karna
-for (let i = 0; i < 10; i++) {
-  if (i % 2 === 0) continue; // even numbers skip
-  console.log(i); // 1, 3, 5, 7, 9
-}
-
-// Labeled loops — nested loops mein useful
-outer: for (let i = 0; i < 3; i++) {
-  inner: for (let j = 0; j < 3; j++) {
-    if (i === 1 && j === 1) break outer; // outer loop se bahar
-    console.log(`${i}-${j}`);
-  }
-}
-// Output: 0-0, 0-1, 0-2, 1-0
 ```
 
 ---
 
-## 7️⃣ String Methods — Important Ones
+## ✍️ Immediate Practice Exercises (स्वयं करके देखें)
 
+अब आप नीचे दिए गए छोटे-छोटे अभ्यास अपने कोड एडिटर या टर्मिनल में करके देखें:
+
+### 🎯 Practice Challenge 1:
+1. एक `const` वेरिएबल बनाएं `appName` नाम से और उसमें अपनी पसंदीदा ऐप का नाम डालें।
+2. एक `let` वेरिएबल बनाएं `bugsFound` नाम से और वैल्यू `0` दें।
+3. `bugsFound` को बढ़ाकर `3` करें।
+4. `console.log` के ज़रिए एक सुंदर संदेश प्रिंट करें।
+
+**हल (Solution Hint):**
 ```javascript
-let str = "  Hello, World!  ";
+const appName = "SauceDemo Portal";
+let bugsFound = 0;
 
-// Basics
-str.length;                  // 17 (spaces bhi count honge)
-str.trim();                  // "Hello, World!" (dono taraf se spaces hatao)
-str.trimStart();             // "Hello, World!  "
-str.trimEnd();               // "  Hello, World!"
-
-// Case
-str.toUpperCase();           // "  HELLO, WORLD!  "
-str.toLowerCase();           // "  hello, world!  "
-
-// Search
-str.includes("World");       // true
-str.startsWith("  Hello");   // true
-str.endsWith("!  ");         // true
-str.indexOf("World");        // 9 (index return karta hai, -1 agar nahi mila)
-
-// Extract
-str.slice(2, 7);             // "Hello" (start, end — end included nahi)
-str.substring(2, 7);         // "Hello" (similar to slice)
-
-// Replace
-str.replace("World", "JS");     // "  Hello, JS!  " (pehla match)
-str.replaceAll("l", "L");       // "  HeLLo, WorLd!  " (sab replace)
-
-// Split
-"a,b,c".split(",");          // ["a", "b", "c"]
-"hello".split("");           // ["h", "e", "l", "l", "o"]
-
-// Repeat & Pad
-"ha".repeat(3);              // "hahaha"
-"5".padStart(3, "0");        // "005" (useful for formatting)
-"5".padEnd(3, "0");          // "500"
-
-// Template Literals (BAHUT important — interviews mein use karo)
-let name = "Hariom";
-let age = 25;
-let message = `My name is ${name} and I am ${age} years old.
-This is a multi-line string.
-I can do math: ${2 + 3} = 5`;
+bugsFound = 3;
+console.log(`एप्लिकेशन: ${appName} | कुल मिले बग्स: ${bugsFound}`);
 ```
 
 ---
 
-## 🧠 Key Takeaways (Yaad Rakhna!)
-
-| Concept | Remember This |
-|---------|--------------|
-| `var` vs `let` vs `const` | `const` > `let` > `var` (never) |
-| `typeof null` | `"object"` — JS bug |
-| `typeof NaN` | `"number"` — counterintuitive |
-| `==` vs `===` | Hamesha `===` use karo |
-| `\|\|` vs `??` | `??` sirf null/undefined check karta hai |
-| Falsy values | `false`, `0`, `""`, `null`, `undefined`, `NaN` |
-| `[]` truthy hai? | YES! Empty array truthy hai |
-| `for...of` vs `for...in` | `of` = values (arrays), `in` = keys (objects) |
-
----
-
-## 📝 Next Step
-Ab `exercises/01-basics-exercises.js` file open karo aur exercises solve karo! Solutions `exercises/01-basics-solutions.js` mein hain — but pehle KHUD try karo!
+## 🧠 Checkpoint (ज्ञान की समीक्षा)
+1. `const` और `let` में क्या मुख्य अंतर है?
+2. `5 === "5"` का आउटपुट क्या होगा और क्यों?
+3. ऑटोमेशन में टेस्ट स्टेटस को ट्रैक करने के लिए कौन सा डेटा टाइप सबसे सही है?
